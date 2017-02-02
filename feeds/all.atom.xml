@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom"><title>Justin Naldzin</title><link href="http://justinnaldzin.github.io/" rel="alternate"></link><link href="http://justinnaldzin.github.io/feeds/all.atom.xml" rel="self"></link><id>http://justinnaldzin.github.io/</id><updated>2017-02-02T00:00:00-05:00</updated><entry><title>Test</title><link href="http://justinnaldzin.github.io/test.html" rel="alternate"></link><published>2017-02-02T00:00:00-05:00</published><updated>2017-02-02T00:00:00-05:00</updated><author><name>Justin Naldzin</name></author><id>tag:justinnaldzin.github.io,2017-02-02:/test.html</id><summary type="html">&lt;p&gt;Test&lt;/p&gt;</summary><content type="html">&lt;p&gt;Test&lt;/p&gt;</content></entry><entry><title>Create a website using GitHub Pages and Pelican</title><link href="http://justinnaldzin.github.io/create-a-website-using-github-pages-and-pelican.html" rel="alternate"></link><published>2017-02-01T00:00:00-05:00</published><updated>2017-02-01T00:00:00-05:00</updated><author><name>Justin Naldzin</name></author><id>tag:justinnaldzin.github.io,2017-02-01:/create-a-website-using-github-pages-and-pelican.html</id><summary type="html">&lt;p&gt;Using &lt;a href="http://docs.getpelican.com"&gt;Pelican&lt;/a&gt; with &lt;a href="https://pages.github.com"&gt;GitHub Pages&lt;/a&gt;, this guide shows how to set up a static site for hosting and sharing projects.&lt;/p&gt;
+&lt;p&gt;Pelican is a static site generator, written in Python, that requires no database or server-side logic.&lt;/p&gt;
+&lt;p&gt;GitHub Pages allows you to host website content directly from your GitHub repository.&lt;/p&gt;
+&lt;hr&gt;
+&lt;h3&gt;Create …&lt;/h3&gt;</summary><content type="html">&lt;p&gt;Using &lt;a href="http://docs.getpelican.com"&gt;Pelican&lt;/a&gt; with &lt;a href="https://pages.github.com"&gt;GitHub Pages&lt;/a&gt;, this guide shows how to set up a static site for hosting and sharing projects.&lt;/p&gt;
+&lt;p&gt;Pelican is a static site generator, written in Python, that requires no database or server-side logic.&lt;/p&gt;
+&lt;p&gt;GitHub Pages allows you to host website content directly from your GitHub repository.&lt;/p&gt;
+&lt;hr&gt;
+&lt;h3&gt;Create a Pelican source project repository&lt;/h3&gt;
+&lt;p&gt;Login to your GitHub account and create a new repository named &lt;code&gt;pelican-github-pages&lt;/code&gt;.  This will be the Pelican source project that will generate the static HTML pages.&lt;/p&gt;
+&lt;p&gt;Clone the repo&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;git clone https://github.com/username/pelican-github-pages
+&lt;span class="nb"&gt;cd&lt;/span&gt; pelican-github-pages
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;hr&gt;
+&lt;h2&gt;Create a GitHub Pages repo&lt;/h2&gt;
+&lt;p&gt;Head over to &lt;a href="https://pages.github.com/"&gt;GitHub Pages &lt;/a&gt; and follow the simple instructions to create a new repository named &lt;code&gt;username.github.io&lt;/code&gt; substituting your GitHub username, obviously.  This will contain the HTML files for the static site that GitHub hosts.&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2&gt;Install and setup Pelican&lt;/h2&gt;
+&lt;p&gt;Install Pelican and Markdown&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;pip install pelican markdown
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Create a skeleton project via the &lt;code&gt;pelican-quickstart&lt;/code&gt; script&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;pelican-quickstart
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Here is an example of the script output:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;Welcome to pelican-quickstart v3.7.1.
+
+This script will help you create a new Pelican-based website.
+
+Please answer the following questions so this script can generate the files
+needed by Pelican.
+
+
+&amp;gt; Where do you want to create your new web site? [.]
+&amp;gt; What will be the title of this web site? Justin Naldzin
+&amp;gt; Who will be the author of this web site? Justin Naldzin
+&amp;gt; What will be the default language of this web site? [en]
+&amp;gt; Do you want to specify a URL prefix? e.g., http://example.com   (Y/n) y
+&amp;gt; What is your URL prefix? (see above example; no trailing slash) http://justinnaldzin.github.io
+&amp;gt; Do you want to enable article pagination? (Y/n) y
+&amp;gt; How many articles per page do you want? [10]
+&amp;gt; What is your time zone? [Europe/Paris] America/New_York
+&amp;gt; Do you want to generate a Fabfile/Makefile to automate generation and publishing? (Y/n) y
+&amp;gt; Do you want an auto-reload &amp;amp; simpleHTTP script to assist with theme and site development? (Y/n) y
+&amp;gt; Do you want to upload your website using FTP? (y/N) n
+&amp;gt; Do you want to upload your website using SSH? (y/N) n
+&amp;gt; Do you want to upload your website using Dropbox? (y/N) n
+&amp;gt; Do you want to upload your website using S3? (y/N) n
+&amp;gt; Do you want to upload your website using Rackspace Cloud Files? (y/N) n
+&amp;gt; Do you want to upload your website using GitHub Pages? (y/N) y
+&amp;gt; Is this your personal page (username.github.io)? (y/N) y
+Done. Your new project is available at /Users/justin/Desktop/pelican-github-pages
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Create a Markdown document saving with a &lt;code&gt;.md&lt;/code&gt; extension within the &lt;code&gt;content&lt;/code&gt; directory&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;Title&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="n"&gt;Hello&lt;/span&gt; &lt;span class="n"&gt;World&lt;/span&gt;
+&lt;span class="n"&gt;Date&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;2017&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;
+&lt;span class="n"&gt;Category&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="n"&gt;Guides&lt;/span&gt;
+
+&lt;span class="n"&gt;Hello&lt;/span&gt; &lt;span class="n"&gt;World&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;hr&gt;
+&lt;h2&gt;Pelican Themes&lt;/h2&gt;
+&lt;p&gt;Add the &lt;strong&gt;Pelican Themes&lt;/strong&gt; repo as a submodule of your Pelican source project&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;git submodule add https://github.com/getpelican/pelican-themes
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Also add the &lt;strong&gt;Pelican Plugins&lt;/strong&gt; repo as a submodule&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;git submodule add https://github.com/getpelican/pelican-plugins
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Set the &lt;code&gt;THEME&lt;/code&gt; variable in your &lt;code&gt;pelicanconf.py&lt;/code&gt; file to the absolute or relative path to the theme.  For example, here is the &lt;strong&gt;Bootstrap 3&lt;/strong&gt; theme:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="nv"&gt;THEME&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;pelican-themes/pelican-bootstrap3&amp;quot;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;And set the following variables to support the Bootstrap 3 theme&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="nv"&gt;JINJA_EXTENSIONS&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;jinja2.ext.i18n&amp;#39;&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;
+&lt;span class="nv"&gt;PLUGIN_PATHS&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;pelican-plugins&amp;#39;&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;
+&lt;span class="nv"&gt;PLUGINS&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;i18n_subsites&amp;#39;&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Add the GitHub pages repo that you created above as a submodule, naming it &lt;code&gt;output&lt;/code&gt; to match Pelican's default output directory.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;git submodule add https://github.com/username/username.github.io output
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Change the following setting to False in your &lt;code&gt;publishconf.py&lt;/code&gt; file to prevent the deletion of the output directory when running the &lt;code&gt;pelican&lt;/code&gt; command.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="nv"&gt;DELETE_OUTPUT_DIRECTORY&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; False
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;hr&gt;
+&lt;h2&gt;Generating the static site files and run a devserver&lt;/h2&gt;
+&lt;p&gt;Create a Markdown file saving with a &lt;code&gt;.md&lt;/code&gt; extension within the &lt;code&gt;content&lt;/code&gt; directory.  For example:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;Title&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="n"&gt;Hello&lt;/span&gt; &lt;span class="n"&gt;World&lt;/span&gt;
+&lt;span class="n"&gt;Date&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;2017&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;
+&lt;span class="n"&gt;Category&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="n"&gt;Guide&lt;/span&gt;
+
+&lt;span class="n"&gt;Hello&lt;/span&gt; &lt;span class="n"&gt;World&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Within the project's main directory, generate the HTML files and serve the site locally&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;make devserver
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Navigate to http://localhost:8000&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2&gt;Publish the static HTML files to GitHub&lt;/h2&gt;
+&lt;p&gt;Initialize the output directory, add the remote, add the files, commit, and push the changes&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="nb"&gt;cd&lt;/span&gt; output
+$ git init
+$ git remote add origin https://github.com/username/username.github.io.git
+$ git add --all
+$ git commit -m &lt;span class="s2"&gt;&amp;quot;inital commit&amp;quot;&lt;/span&gt;
+$ git push origin master
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Now navigate to http://username.github.io&lt;/p&gt;
+&lt;p&gt;Also push the Pelican source project to the &lt;code&gt;pelican-github-pages&lt;/code&gt; repo&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="nb"&gt;cd&lt;/span&gt; ..
+git add .
+git commit -m &lt;span class="s2"&gt;&amp;quot;First commit.&amp;quot;&lt;/span&gt;
+git push -u origin master
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Add a pre-push git hook to the Pelican source repo that handles the automatic pushing of the GitHub Pages repo.&lt;br&gt;
+This file needs to be placed in the Pelican source directory at &lt;code&gt;.git/hooks/pre-push&lt;/code&gt;&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="ch"&gt;#!/bin/bash&lt;/span&gt;
+&lt;span class="nv"&gt;lastcommit&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="sb"&gt;`&lt;/span&gt;git log origin/master -1 --oneline&lt;span class="sb"&gt;`&lt;/span&gt;
+make publish
+&lt;span class="nb"&gt;cd&lt;/span&gt; output &lt;span class="o"&gt;&amp;amp;&amp;amp;&lt;/span&gt; git add -A &lt;span class="o"&gt;&amp;amp;&amp;amp;&lt;/span&gt; git commit -m &lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="nv"&gt;$lastcommit&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt; &lt;span class="o"&gt;&amp;amp;&amp;amp;&lt;/span&gt; git push origin master
+&lt;span class="nb"&gt;exit&lt;/span&gt; &lt;span class="m"&gt;0&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;</content></entry><entry><title>Hello World</title><link href="http://justinnaldzin.github.io/hello-world.html" rel="alternate"></link><published>2017-01-30T00:00:00-05:00</published><updated>2017-01-30T00:00:00-05:00</updated><author><name>Justin Naldzin</name></author><id>tag:justinnaldzin.github.io,2017-01-30:/hello-world.html</id><summary type="html">&lt;p&gt;Welcome!  This is my first post.  Hopefully I keep up with this blog and create some interesting and useful posts.  My goals for this site are to provide:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;How-to guides&lt;/li&gt;
+&lt;li&gt;GitHub repository documentation&lt;/li&gt;
+&lt;li&gt;Jupyter notebooks&lt;/li&gt;
+&lt;li&gt;Code snippets&lt;/li&gt;
+&lt;li&gt;About me&lt;/li&gt;
+&lt;li&gt;Portfolio&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;I'd like to share my knowledge and give back to …&lt;/p&gt;</summary><content type="html">&lt;p&gt;Welcome!  This is my first post.  Hopefully I keep up with this blog and create some interesting and useful posts.  My goals for this site are to provide:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;How-to guides&lt;/li&gt;
+&lt;li&gt;GitHub repository documentation&lt;/li&gt;
+&lt;li&gt;Jupyter notebooks&lt;/li&gt;
+&lt;li&gt;Code snippets&lt;/li&gt;
+&lt;li&gt;About me&lt;/li&gt;
+&lt;li&gt;Portfolio&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;I'd like to share my knowledge and give back to the &lt;em&gt;data science&lt;/em&gt; community, the same way that they have taught me.  I hope &lt;strong&gt;data engineers&lt;/strong&gt; everywhere find these posts relevant and helpful.  Let's go!&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;"The way to get started is to quit talking and begin doing."
+-Walt Disney&lt;/p&gt;
+&lt;/blockquote&gt;</content></entry></feed>
