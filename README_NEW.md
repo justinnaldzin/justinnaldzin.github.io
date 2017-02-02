@@ -1,1 +1,0 @@
-../content/create-a-website-using-github-pages-and-pelican.md
