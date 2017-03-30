@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" prefix="og: http://ogp.me/ns# fb: https://www.facebook.com/2008/fbml">
 <head>
-    <title>Justin Naldzin</title>
+    <title>About Me - Justin Naldzin</title>
     <!-- Using the latest rendering mode for IE -->
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta charset="utf-8">
@@ -9,26 +9,30 @@
 
 
 
-<link rel="canonical" href=".">
-        <meta name="author" content="Justin Naldzin" />
+<link rel="canonical" href="/">
 
-    <!-- Open Graph tags -->
+        <meta name="author" content="Justin Naldzin" />
+        <meta name="keywords" content="about" />
+        <meta name="description" content="Welcome to my blog. Thank you for visiting!" />
+
         <meta property="og:site_name" content="Justin Naldzin" />
-        <meta property="og:type" content="website"/>
-        <meta property="og:title" content="Justin Naldzin"/>
-        <meta property="og:url" content="."/>
-        <meta property="og:description" content="Justin Naldzin"/>
+        <meta property="og:type" content="article"/>
+        <meta property="og:title" content="About Me"/>
+        <meta property="og:url" content="/"/>
+        <meta property="og:description" content="Welcome to my blog. Thank you for visiting!"/>
+        <meta property="article:published_time" content="2017-02-01" />
+            <meta property="article:section" content="About" />
+            <meta property="article:tag" content="about" />
+            <meta property="article:author" content="Justin Naldzin" />
 
 
     <!-- Bootstrap -->
-        <link rel="stylesheet" href="./theme/css/bootstrap.min.css" type="text/css"/>
-    <link href="./theme/css/font-awesome.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="/theme/css/bootstrap.min.css" type="text/css"/>
+    <link href="/theme/css/font-awesome.min.css" rel="stylesheet">
 
-    <link href="./theme/css/pygments/native.css" rel="stylesheet">
-    <link rel="stylesheet" href="./theme/css/style.css" type="text/css"/>
+    <link href="/theme/css/pygments/native.css" rel="stylesheet">
+    <link rel="stylesheet" href="/theme/css/style.css" type="text/css"/>
 
-        <link href="./feeds/all.atom.xml" type="application/atom+xml" rel="alternate"
-              title="Justin Naldzin ATOM Feed"/>
 
 
 
@@ -45,16 +49,22 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a href="./" class="navbar-brand">
+            <a href="/" class="navbar-brand">
 Justin Naldzin            </a>
         </div>
         <div class="collapse navbar-collapse navbar-ex1-collapse">
             <ul class="nav navbar-nav">
-                        <li >
-                            <a href="./category/guides.html">Guides</a>
+                        <li class="active">
+                            <a href="/category/about.html">About</a>
                         </li>
                         <li >
-                            <a href="./category/personal.html">Personal</a>
+                            <a href="/category/guides.html">Guides</a>
+                        </li>
+                        <li >
+                            <a href="/category/internet-of-things.html">Internet of things</a>
+                        </li>
+                        <li >
+                            <a href="/category/notebooks.html">Notebooks</a>
                         </li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
@@ -68,40 +78,40 @@ Justin Naldzin            </a>
 <div class="container">
     <div class="row">
         <div class="col-sm-9">
-            <article>
-                <h2><a href="./test.html">Test</a></h2>
-                <div class="summary"><p>Test</p>
-                    <a class="btn btn-default btn-xs" href="./test.html">more ...</a>
+    <section id="content">
+        <article>
+            <header class="page-header">
+                <h1>
+                    <a href="/"
+                       rel="bookmark"
+                       title="Permalink to About Me">
+                        About Me
+                    </a>
+                </h1>
+            </header>
+            <div class="entry-content">
+                <div class="panel">
+                    <div class="panel-body">
+<footer class="post-info">
+    <span class="label label-default">Date</span>
+    <span class="published">
+        <i class="fa fa-calendar"></i><time datetime="2017-02-01T00:00:00-05:00"> Wed 01 February 2017</time>
+    </span>
+
+
+
+
+
+<span class="label label-default">Tags</span>
+	<a href="/tag/about.html">about</a>
+    
+</footer><!-- /.post-info -->                    </div>
                 </div>
-            </article>
-            <hr/>
-            <article>
-                <h2><a href="./create-a-website-using-github-pages-and-pelican.html">Create a website using GitHub Pages and Pelican</a></h2>
-                <div class="summary"><p>Using <a href="http://docs.getpelican.com">Pelican</a> with <a href="https://pages.github.com">GitHub Pages</a>, this guide shows how to set up a static site for hosting and sharing projects.</p>
-<p>Pelican is a static site generator, written in Python, that requires no database or server-side logic.</p>
-<p>GitHub Pages allows you to host website content directly from your GitHub repository.</p>
-<hr>
-<h3>Create …</h3>
-                    <a class="btn btn-default btn-xs" href="./create-a-website-using-github-pages-and-pelican.html">more ...</a>
-                </div>
-            </article>
-            <hr/>
-            <article>
-                <h2><a href="./hello-world.html">Hello World</a></h2>
-                <div class="summary"><p>Welcome!  This is my first post.  Hopefully I keep up with this blog and create some interesting and useful posts.  My goals for this site are to provide:</p>
-<ul>
-<li>How-to guides</li>
-<li>GitHub repository documentation</li>
-<li>Jupyter notebooks</li>
-<li>Code snippets</li>
-<li>About me</li>
-<li>Portfolio</li>
-</ul>
-<p>I'd like to share my knowledge and give back to …</p>
-                    <a class="btn btn-default btn-xs" href="./hello-world.html">more ...</a>
-                </div>
-            </article>
-            <hr/>
+                <p>Welcome to my blog.  Thank you for visiting!</p>
+            </div>
+            <!-- /.entry-content -->
+        </article>
+    </section>
 
         </div>
         <div class="col-sm-3" id="sidebar">
@@ -145,13 +155,13 @@ Justin Naldzin            </a>
       </div>
    </div>
 </footer>
-<script src="./theme/js/jquery.min.js"></script>
+<script src="/theme/js/jquery.min.js"></script>
 
 <!-- Include all compiled plugins (below), or include individual files as needed -->
-<script src="./theme/js/bootstrap.min.js"></script>
+<script src="/theme/js/bootstrap.min.js"></script>
 
 <!-- Enable responsive features in IE8 with Respond.js (https://github.com/scottjehl/Respond) -->
-<script src="./theme/js/respond.min.js"></script>
+<script src="/theme/js/respond.min.js"></script>
 
 
 </body>
