@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom"><title>Justin Naldzin - Internet Of Things</title><link href="http://justinnaldzin.github.io/" rel="alternate"></link><link href="http://justinnaldzin.github.io/feeds/internet-of-things.atom.xml" rel="self"></link><id>http://justinnaldzin.github.io/</id><updated>2017-02-07T00:00:00-05:00</updated><entry><title>Magic Mirror</title><link href="http://justinnaldzin.github.io/magic-mirror.html" rel="alternate"></link><published>2017-02-07T00:00:00-05:00</published><updated>2017-02-07T00:00:00-05:00</updated><author><name>Justin Naldzin</name></author><id>tag:justinnaldzin.github.io,2017-02-07:/magic-mirror.html</id><summary type="html">&lt;p&gt;Here is my take on the &lt;a href="https://magicmirror.builders/"&gt;Magic Mirror&lt;/a&gt; with a few additions:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://learn.adafruit.com/pir-passive-infrared-proximity-motion-sensor/"&gt;PIR (motion) sensor&lt;/a&gt; to wake the display upon movement&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://www.adafruit.com/products/471"&gt;LED arcade button&lt;/a&gt; to toggle through a pre-defined list of websites&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;My forked MagicMirror repo is on &lt;a href="https://github.com/justinnaldzin/MagicMirror"&gt;GitHub&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;A big thank you to &lt;a href="michaelteeuw.nl"&gt;Michael Teeuw&lt;/a&gt;.&lt;/p&gt;
+&lt;p align="left"&gt;
+&lt;a href="http://justinnaldzin.github.io/images/magicmirror4.jpg"&gt;&lt;img src="http://justinnaldzin.github.io/images/magicmirror4.jpg" alt="MagicMirror4" width="220"&gt;&lt;/a&gt;
+&lt;a href="http://justinnaldzin.github.io/images/magicmirror2.jpg"&gt;&lt;img src="http://justinnaldzin.github.io/images/magicmirror2.jpg" alt="MagicMirror2" width="220"&gt;&lt;/a&gt;
+&lt;a href="http://justinnaldzin.github.io/images/magicmirror5.jpg"&gt;&lt;img src="http://justinnaldzin.github.io/images/magicmirror5.jpg" alt="MagicMirror5" width="220"&gt;&lt;/a&gt;
+&lt;a href="http://justinnaldzin.github.io/images/magicmirror3.jpg"&gt;&lt;img src="http://justinnaldzin.github.io/images/magicmirror3.jpg" alt="MagicMirror3" width="220"&gt;&lt;/a&gt;
+&lt;a href="http://justinnaldzin.github.io/images/magicmirror1.jpg"&gt;&lt;img src="http://justinnaldzin.github.io/images/magicmirror1.jpg" alt="MagicMirror1" width="220"&gt;&lt;/a&gt;
+&lt;a href="http://justinnaldzin.github.io/images/magicmirror7.jpg"&gt;&lt;img src="http://justinnaldzin.github.io/images/magicmirror7.jpg" alt="MagicMirror7" width="220"&gt;&lt;/a&gt;
+&lt;/p&gt;</summary><content type="html">&lt;p&gt;Here is my take on the &lt;a href="https://magicmirror.builders/"&gt;Magic Mirror&lt;/a&gt; with a few additions:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://learn.adafruit.com/pir-passive-infrared-proximity-motion-sensor/"&gt;PIR (motion) sensor&lt;/a&gt; to wake the display upon movement&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://www.adafruit.com/products/471"&gt;LED arcade button&lt;/a&gt; to toggle through a pre-defined list of websites&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;My forked MagicMirror repo is on &lt;a href="https://github.com/justinnaldzin/MagicMirror"&gt;GitHub&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;A big thank you to &lt;a href="michaelteeuw.nl"&gt;Michael Teeuw&lt;/a&gt;.&lt;/p&gt;
+&lt;p align="left"&gt;
+&lt;a href="http://justinnaldzin.github.io/images/magicmirror4.jpg"&gt;&lt;img src="http://justinnaldzin.github.io/images/magicmirror4.jpg" alt="MagicMirror4" width="220"&gt;&lt;/a&gt;
+&lt;a href="http://justinnaldzin.github.io/images/magicmirror2.jpg"&gt;&lt;img src="http://justinnaldzin.github.io/images/magicmirror2.jpg" alt="MagicMirror2" width="220"&gt;&lt;/a&gt;
+&lt;a href="http://justinnaldzin.github.io/images/magicmirror5.jpg"&gt;&lt;img src="http://justinnaldzin.github.io/images/magicmirror5.jpg" alt="MagicMirror5" width="220"&gt;&lt;/a&gt;
+&lt;a href="http://justinnaldzin.github.io/images/magicmirror3.jpg"&gt;&lt;img src="http://justinnaldzin.github.io/images/magicmirror3.jpg" alt="MagicMirror3" width="220"&gt;&lt;/a&gt;
+&lt;a href="http://justinnaldzin.github.io/images/magicmirror1.jpg"&gt;&lt;img src="http://justinnaldzin.github.io/images/magicmirror1.jpg" alt="MagicMirror1" width="220"&gt;&lt;/a&gt;
+&lt;a href="http://justinnaldzin.github.io/images/magicmirror7.jpg"&gt;&lt;img src="http://justinnaldzin.github.io/images/magicmirror7.jpg" alt="MagicMirror7" width="220"&gt;&lt;/a&gt;
+&lt;/p&gt;</content><category term="magic-mirror"></category><category term="iot"></category></entry></feed>

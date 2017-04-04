@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" prefix="og: http://ogp.me/ns# fb: https://www.facebook.com/2008/fbml">
 <head>
-    <title>Spark SQL Benchmarking v1 - Justin Naldzin</title>
+    <title>Spark SQL Benchmarking v2 - Justin Naldzin</title>
     <!-- Using the latest rendering mode for IE -->
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta charset="utf-8">
@@ -9,18 +9,18 @@
 
 
 
-<link rel="canonical" href="./spark-sql-benchmarking-v1.html">
+<link rel="canonical" href="./spark-sql-benchmarking-v2.html">
 
         <meta name="author" content="Justin Naldzin" />
         <meta name="keywords" content="python,jupyter,spark" />
-        <meta name="description" content="Using Apache Spark v1.x" />
+        <meta name="description" content="Using Apache Spark v2.x" />
 
         <meta property="og:site_name" content="Justin Naldzin" />
         <meta property="og:type" content="article"/>
-        <meta property="og:title" content="Spark SQL Benchmarking v1"/>
-        <meta property="og:url" content="./spark-sql-benchmarking-v1.html"/>
-        <meta property="og:description" content="Using Apache Spark v1.x"/>
-        <meta property="article:published_time" content="2017-02-14" />
+        <meta property="og:title" content="Spark SQL Benchmarking v2"/>
+        <meta property="og:url" content="./spark-sql-benchmarking-v2.html"/>
+        <meta property="og:description" content="Using Apache Spark v2.x"/>
+        <meta property="article:published_time" content="2017-04-04" />
             <meta property="article:section" content="Notebooks" />
             <meta property="article:tag" content="python" />
             <meta property="article:tag" content="jupyter" />
@@ -88,10 +88,10 @@ Justin Naldzin            </a>
         <article>
             <header class="page-header">
                 <h1>
-                    <a href="./spark-sql-benchmarking-v1.html"
+                    <a href="./spark-sql-benchmarking-v2.html"
                        rel="bookmark"
-                       title="Permalink to Spark SQL Benchmarking v1">
-                        Spark SQL Benchmarking v1
+                       title="Permalink to Spark SQL Benchmarking v2">
+                        Spark SQL Benchmarking v2
                     </a>
                 </h1>
             </header>
@@ -101,7 +101,7 @@ Justin Naldzin            </a>
 <footer class="post-info">
     <span class="label label-default">Date</span>
     <span class="published">
-        <i class="fa fa-calendar"></i><time datetime="2017-02-14T00:00:00-05:00"> Tue 14 February 2017</time>
+        <i class="fa fa-calendar"></i><time datetime="2017-04-04T00:00:00-04:00"> Tue 04 April 2017</time>
     </span>
 
 
@@ -1103,7 +1103,7 @@ h6:hover .anchor-link {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Using Apache Spark v1.x</p>
+<p>Using Apache Spark v2.x</p>
 
 </div>
 </div>
@@ -1113,7 +1113,7 @@ h6:hover .anchor-link {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Define-SparkContext-and-SQLContext">Define SparkContext and SQLContext<a class="anchor-link" href="#Define-SparkContext-and-SQLContext">&#182;</a></h3>
+<h3 id="Define-SparkSession">Define SparkSession<a class="anchor-link" href="#Define-SparkSession">&#182;</a></h3>
 </div>
 </div>
 </div>
@@ -1134,11 +1134,9 @@ h6:hover .anchor-link {
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timezone</span>
 <span class="kn">from</span> <span class="nn">threading</span> <span class="k">import</span> <span class="n">Thread</span>
 <span class="kn">from</span> <span class="nn">sqlalchemy</span> <span class="k">import</span> <span class="n">types</span>
-<span class="kn">from</span> <span class="nn">pyspark</span> <span class="k">import</span> <span class="n">SparkContext</span><span class="p">,</span> <span class="n">SparkConf</span><span class="p">,</span> <span class="n">SQLContext</span>
+<span class="kn">from</span> <span class="nn">pyspark.sql</span> <span class="k">import</span> <span class="n">SparkSession</span>
 
-<span class="n">conf</span> <span class="o">=</span> <span class="n">SparkConf</span><span class="p">()</span><span class="o">.</span><span class="n">setAppName</span><span class="p">(</span><span class="s1">&#39;Spark SQL Benchmarking&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;spark.executor.memory&quot;</span><span class="p">,</span> <span class="s2">&quot;2g&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">setMaster</span><span class="p">(</span><span class="s2">&quot;local[*]&quot;</span><span class="p">)</span>
-<span class="n">sc</span> <span class="o">=</span> <span class="n">SparkContext</span><span class="p">(</span><span class="n">conf</span><span class="o">=</span><span class="n">conf</span><span class="p">)</span>
-<span class="n">sqlContext</span> <span class="o">=</span> <span class="n">SQLContext</span><span class="p">(</span><span class="n">sc</span><span class="p">)</span>
+<span class="n">spark</span> <span class="o">=</span> <span class="n">SparkSession</span><span class="o">.</span><span class="n">builder</span><span class="o">.</span><span class="n">appName</span><span class="p">(</span><span class="s2">&quot;Spark SQL Benchmarking&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">master</span><span class="p">(</span><span class="s2">&quot;local[*]&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="s2">&quot;spark.executor.memory&quot;</span><span class="p">,</span> <span class="s2">&quot;2g&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">getOrCreate</span><span class="p">()</span>
 </pre></div>
 
 </div>
@@ -1153,29 +1151,53 @@ h6:hover .anchor-link {
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Create database</span>
 <span class="n">database_name</span> <span class="o">=</span> <span class="s1">&#39;spark_sql_benchmarking&#39;</span>
-<span class="n">sqlContext</span><span class="o">.</span><span class="n">sql</span><span class="p">(</span><span class="s1">&#39;CREATE DATABASE IF NOT EXISTS &#39;</span> <span class="o">+</span> <span class="n">database_name</span><span class="p">)</span>
-<span class="n">sqlContext</span><span class="o">.</span><span class="n">sql</span><span class="p">(</span><span class="s1">&#39;USE &#39;</span> <span class="o">+</span> <span class="n">database_name</span><span class="p">)</span>
+<span class="n">spark</span><span class="o">.</span><span class="n">sql</span><span class="p">(</span><span class="s1">&#39;CREATE DATABASE IF NOT EXISTS &#39;</span> <span class="o">+</span> <span class="n">database_name</span><span class="p">)</span>
+<span class="n">spark</span><span class="o">.</span><span class="n">catalog</span><span class="o">.</span><span class="n">setCurrentDatabase</span><span class="p">(</span><span class="n">database_name</span><span class="p">)</span>
 </pre></div>
 
 </div>
 </div>
 </div>
 
-<div class="output_wrapper">
-<div class="output">
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># REFERENCE</span>
+<span class="c1">#sqlContext.tableNames(&#39;spark_sql_benchmarking&#39;)          # [&#39;test_table_1&#39;]</span>
+<span class="c1">#sqlContext.tables(&#39;spark_sql_benchmarking&#39;).toPandas()   # returns a pandas.DataFrame</span>
+<span class="c1">##spark.catalog.listDatabases()  # [Database(name=&#39;default&#39;, description=&#39;default database&#39;, locationUri=&#39;file:/jupyter-vagrant/notebook/spark-warehouse&#39;), Database(name=&#39;spark_sql_benchmarking&#39;, description=&#39;&#39;, locationUri=&#39;file:/jupyter-vagrant/notebook/spark-warehouse/spark_sql_benchmarking.db&#39;)]</span>
+<span class="c1">##spark.catalog.currentDatabase()  # &#39;spark_sql_benchmarking&#39;</span>
+<span class="c1">##spark.catalog.listTables(&#39;spark_sql_benchmarking&#39;)  # [Table(name=&#39;test_table_1&#39;, database=None, description=None, tableType=&#39;TEMPORARY&#39;, isTemporary=True)]</span>
 
+<span class="c1">#sqlContext.registerDataFrameAsTable(dataframe, &#39;df_registertable&#39;)</span>
+<span class="c1">#dataframe.createOrReplaceTempView(&#39;df_tempview&#39;)</span>
+<span class="c1">#dataframe.createGlobalTempView(&#39;df_globaltempview2&#39;)</span>
+<span class="c1">#sqlContext.createExternalTable(&#39;df_external&#39;)#, path=None, source=None, schema=None, **options)</span>
+<span class="c1">#sqlContext.createExternalTable(tableName, &quot;parquet&quot;, someDF.schema, Map(&quot;path&quot; -&gt; path))</span>
+</pre></div>
 
-<div class="output_area">
-<div class="prompt output_prompt">Out[2]:</div>
-
-
-
-<div class="output_text output_subarea output_execute_result">
-<pre>DataFrame[]</pre>
+</div>
+</div>
 </div>
 
 </div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Testing</span>
+<span class="c1">#dataframe = spark.catalog.createExternalTable(&#39;temp2_external_csv&#39;, &#39;data/test_table_1.csv&#39;, &#39;csv&#39;, header=&#39;true&#39;, inferschema=&#39;true&#39;)</span>
+<span class="c1">#spark.table(&#39;temp2_external_csv&#39;).schema</span>
 
+<span class="c1"># Alternative syntax</span>
+<span class="c1">#sqlContext.sql(&#39;CREATE TABLE temp_external_csv USING CSV&#39;)</span>
+</pre></div>
+
+</div>
 </div>
 </div>
 
@@ -1278,9 +1300,9 @@ h6:hover .anchor-link {
 <div class="prompt"></div>
 
 <div class="output_subarea output_stream output_stderr output_text">
-<pre>2017-03-06 18:21:10,759 [INFO] Found the following files in path:  /jupyter-vagrant/notebook/data
-2017-03-06 18:21:10,761 [INFO] /jupyter-vagrant/notebook/data/test_table_1.csv
-2017-03-06 18:21:10,763 [INFO] /jupyter-vagrant/notebook/data/test_table_2.csv
+<pre>2017-03-06 19:27:55,767 [INFO] Found the following files in path:  /jupyter-vagrant/notebook/data
+2017-03-06 19:27:55,770 [INFO] /jupyter-vagrant/notebook/data/test_table_1.csv
+2017-03-06 19:27:55,772 [INFO] /jupyter-vagrant/notebook/data/test_table_2.csv
 </pre>
 </div>
 </div>
@@ -1308,12 +1330,12 @@ h6:hover .anchor-link {
     <span class="n">table_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">filepath</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span> <span class="c1">#  set table name to basename of filepath</span>
     
     <span class="c1"># Create an external table from CSV</span>
-    <span class="c1">#sqlContext.createExternalTable(table_name, path=filepath, source=&#39;csv&#39;, header=&#39;true&#39;, inferschema=&#39;true&#39;)</span>
-    
+    <span class="c1">#spark.catalog.createExternalTable(table_name, path=filepath, source=&#39;csv&#39;, header=&#39;true&#39;, inferschema=&#39;true&#39;)</span>
+
     <span class="c1"># The following is needed to rename columns or choose specific columns:</span>
     <span class="k">if</span> <span class="kc">True</span><span class="p">:</span>
         <span class="c1"># Read CSV into Spark DataFrame</span>
-        <span class="n">dataframe</span> <span class="o">=</span> <span class="n">sqlContext</span><span class="o">.</span><span class="n">read</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;com.databricks.spark.csv&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">options</span><span class="p">(</span><span class="n">header</span><span class="o">=</span><span class="s1">&#39;true&#39;</span><span class="p">,</span> <span class="n">inferschema</span><span class="o">=</span><span class="s1">&#39;true&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
+        <span class="n">dataframe</span> <span class="o">=</span> <span class="n">spark</span><span class="o">.</span><span class="n">read</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;com.databricks.spark.csv&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">options</span><span class="p">(</span><span class="n">header</span><span class="o">=</span><span class="s1">&#39;true&#39;</span><span class="p">,</span> <span class="n">inferschema</span><span class="o">=</span><span class="s1">&#39;true&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
         <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">dataframe</span><span class="o">.</span><span class="n">count</span><span class="p">())</span> <span class="o">+</span> <span class="s2">&quot; rows loaded.&quot;</span><span class="p">)</span>
         <span class="c1">#dataframe.dropna(axis=1, thresh=dataframe.count()//10, inplace=True)  # drop columns having over 90% NaN values</span>
         <span class="n">cols</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="o">.</span><span class="n">upper</span><span class="p">,</span> <span class="nb">map</span><span class="p">(</span><span class="n">underscore</span><span class="p">,</span> <span class="n">dataframe</span><span class="o">.</span><span class="n">columns</span><span class="p">))]</span>  <span class="c1"># camelcase to underscore to uppercase</span>
@@ -1323,7 +1345,7 @@ h6:hover .anchor-link {
         <span class="c1"># Create temporary view from CSV</span>
         <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Registering the csv source type as a SQL temporary view...&quot;</span><span class="p">)</span>
         <span class="n">dataframe</span><span class="o">.</span><span class="n">createOrReplaceTempView</span><span class="p">(</span><span class="n">table_name</span><span class="p">)</span>
-        <span class="c1">#sqlContext.registerDataFrameAsTable(dataframe, table_name)  # alternative syntax; throws exception if table already exists</span>
+        <span class="c1">#spark.registerDataFrameAsTable(dataframe, table_name)  # alternative syntax; throws exception if table already exists</span>
         <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Successfully created table: &quot;</span> <span class="o">+</span> <span class="n">table_name</span><span class="p">)</span>
     
     <span class="c1"># Save as alternative data source types and create temporary views</span>
@@ -1334,7 +1356,7 @@ h6:hover .anchor-link {
         <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Saving &quot;</span> <span class="o">+</span> <span class="n">table_path</span> <span class="o">+</span> <span class="s2">&quot;...&quot;</span><span class="p">)</span>
         <span class="n">dataframe</span><span class="o">.</span><span class="n">write</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">table_path</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="n">source_type</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;overwrite&#39;</span><span class="p">)</span>
         <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Registering the &quot;</span> <span class="o">+</span> <span class="n">source_type</span> <span class="o">+</span> <span class="s2">&quot; source type as a SQL temporary view...&quot;</span><span class="p">)</span>            
-        <span class="n">temp_dataframe</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">sqlContext</span><span class="o">.</span><span class="n">read</span><span class="p">,</span> <span class="n">source_type</span><span class="p">)(</span><span class="n">table_path</span><span class="p">)</span>
+        <span class="n">temp_dataframe</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">spark</span><span class="o">.</span><span class="n">read</span><span class="p">,</span> <span class="n">source_type</span><span class="p">)(</span><span class="n">table_path</span><span class="p">)</span>
         <span class="n">temp_dataframe</span><span class="o">.</span><span class="n">createOrReplaceTempView</span><span class="p">(</span><span class="s1">&#39;`&#39;</span> <span class="o">+</span> <span class="n">table_path</span> <span class="o">+</span> <span class="s1">&#39;`&#39;</span><span class="p">)</span>
         <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Successfully created table: &quot;</span> <span class="o">+</span> <span class="n">table_path</span><span class="p">)</span>
 </pre></div>
@@ -1351,34 +1373,34 @@ h6:hover .anchor-link {
 <div class="prompt"></div>
 
 <div class="output_subarea output_stream output_stderr output_text">
-<pre>2017-03-06 18:21:10,814 [INFO] Reading data file: /jupyter-vagrant/notebook/data/test_table_1.csv
-2017-03-06 18:21:28,161 [INFO] 460949 rows loaded.
-2017-03-06 18:21:28,377 [INFO] Registering the csv source type as a SQL temporary view...
-2017-03-06 18:21:28,414 [INFO] Successfully created table: test_table_1
-2017-03-06 18:21:28,416 [INFO] Saving the DataFrame into alternative data source types:
-2017-03-06 18:21:28,416 [INFO] Saving test_table_1.parquet...
-2017-03-06 18:21:48,590 [INFO] Registering the parquet source type as a SQL temporary view...
-2017-03-06 18:21:48,989 [INFO] Successfully created table: test_table_1.parquet
-2017-03-06 18:21:48,991 [INFO] Saving test_table_1.json...
-2017-03-06 18:22:06,200 [INFO] Registering the json source type as a SQL temporary view...
-2017-03-06 18:22:19,179 [INFO] Successfully created table: test_table_1.json
-2017-03-06 18:22:19,181 [INFO] Saving test_table_1.orc...
-2017-03-06 18:22:45,112 [INFO] Registering the orc source type as a SQL temporary view...
-2017-03-06 18:22:45,313 [INFO] Successfully created table: test_table_1.orc
-2017-03-06 18:22:45,316 [INFO] Reading data file: /jupyter-vagrant/notebook/data/test_table_2.csv
-2017-03-06 18:22:45,926 [INFO] 120 rows loaded.
-2017-03-06 18:22:45,935 [INFO] Registering the csv source type as a SQL temporary view...
-2017-03-06 18:22:45,943 [INFO] Successfully created table: test_table_2
-2017-03-06 18:22:45,945 [INFO] Saving the DataFrame into alternative data source types:
-2017-03-06 18:22:45,946 [INFO] Saving test_table_2.parquet...
-2017-03-06 18:22:47,376 [INFO] Registering the parquet source type as a SQL temporary view...
-2017-03-06 18:22:47,659 [INFO] Successfully created table: test_table_2.parquet
-2017-03-06 18:22:47,661 [INFO] Saving test_table_2.json...
-2017-03-06 18:22:48,065 [INFO] Registering the json source type as a SQL temporary view...
-2017-03-06 18:22:48,166 [INFO] Successfully created table: test_table_2.json
-2017-03-06 18:22:48,168 [INFO] Saving test_table_2.orc...
-2017-03-06 18:22:48,554 [INFO] Registering the orc source type as a SQL temporary view...
-2017-03-06 18:22:49,006 [INFO] Successfully created table: test_table_2.orc
+<pre>2017-03-06 19:27:58,232 [INFO] Reading data file: /jupyter-vagrant/notebook/data/test_table_1.csv
+2017-03-06 19:28:15,325 [INFO] 460949 rows loaded.
+2017-03-06 19:28:15,638 [INFO] Registering the csv source type as a SQL temporary view...
+2017-03-06 19:28:15,695 [INFO] Successfully created table: test_table_1
+2017-03-06 19:28:15,697 [INFO] Saving the DataFrame into alternative data source types:
+2017-03-06 19:28:15,698 [INFO] Saving test_table_1.parquet...
+2017-03-06 19:28:38,148 [INFO] Registering the parquet source type as a SQL temporary view...
+2017-03-06 19:28:38,505 [INFO] Successfully created table: test_table_1.parquet
+2017-03-06 19:28:38,507 [INFO] Saving test_table_1.json...
+2017-03-06 19:28:58,013 [INFO] Registering the json source type as a SQL temporary view...
+2017-03-06 19:29:10,832 [INFO] Successfully created table: test_table_1.json
+2017-03-06 19:29:10,852 [INFO] Saving test_table_1.orc...
+2017-03-06 19:29:37,160 [INFO] Registering the orc source type as a SQL temporary view...
+2017-03-06 19:29:37,373 [INFO] Successfully created table: test_table_1.orc
+2017-03-06 19:29:37,377 [INFO] Reading data file: /jupyter-vagrant/notebook/data/test_table_2.csv
+2017-03-06 19:29:37,829 [INFO] 120 rows loaded.
+2017-03-06 19:29:37,840 [INFO] Registering the csv source type as a SQL temporary view...
+2017-03-06 19:29:37,849 [INFO] Successfully created table: test_table_2
+2017-03-06 19:29:37,851 [INFO] Saving the DataFrame into alternative data source types:
+2017-03-06 19:29:37,852 [INFO] Saving test_table_2.parquet...
+2017-03-06 19:29:38,360 [INFO] Registering the parquet source type as a SQL temporary view...
+2017-03-06 19:29:38,525 [INFO] Successfully created table: test_table_2.parquet
+2017-03-06 19:29:38,527 [INFO] Saving test_table_2.json...
+2017-03-06 19:29:38,856 [INFO] Registering the json source type as a SQL temporary view...
+2017-03-06 19:29:39,134 [INFO] Successfully created table: test_table_2.json
+2017-03-06 19:29:39,136 [INFO] Saving test_table_2.orc...
+2017-03-06 19:29:39,640 [INFO] Registering the orc source type as a SQL temporary view...
+2017-03-06 19:29:40,287 [INFO] Successfully created table: test_table_2.orc
 </pre>
 </div>
 </div>
@@ -1401,8 +1423,8 @@ h6:hover .anchor-link {
 <div class="prompt input_prompt">In&nbsp;[7]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">table_name_list</span> <span class="o">=</span> <span class="n">sqlContext</span><span class="o">.</span><span class="n">tableNames</span><span class="p">(</span><span class="n">database_name</span><span class="p">)</span>  <span class="c1"># return a list of names of tables in the database</span>
-<span class="n">tables_dataframe</span> <span class="o">=</span> <span class="n">sqlContext</span><span class="o">.</span><span class="n">tables</span><span class="p">(</span><span class="n">database_name</span><span class="p">)</span><span class="o">.</span><span class="n">toPandas</span><span class="p">()</span>  <span class="c1"># alternatively return a DataFrame containing names of tables in the given database</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">table_name_list</span> <span class="o">=</span> <span class="n">spark</span><span class="o">.</span><span class="n">catalog</span><span class="o">.</span><span class="n">listTables</span><span class="p">(</span><span class="n">database_name</span><span class="p">)</span>  <span class="c1"># return a list of names of tables in the database</span>
+<span class="n">tables_dataframe</span> <span class="o">=</span> <span class="n">spark</span><span class="o">.</span><span class="n">sql</span><span class="p">(</span><span class="s2">&quot;SHOW TABLES&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">toPandas</span><span class="p">()</span>  <span class="c1"># alternatively return a DataFrame containing names of tables in the given database</span>
 <span class="n">cols</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="o">.</span><span class="n">lower</span><span class="p">,</span> <span class="nb">map</span><span class="p">(</span><span class="n">underscore</span><span class="p">,</span> <span class="n">tables_dataframe</span><span class="o">.</span><span class="n">columns</span><span class="p">))]</span>  <span class="c1"># camelcase to underscore to lowercase</span>
 <span class="n">tables_dataframe</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="n">cols</span>
 <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Found the following table names:&#39;</span><span class="p">)</span>
@@ -1423,15 +1445,15 @@ h6:hover .anchor-link {
 <div class="prompt"></div>
 
 <div class="output_subarea output_stream output_stderr output_text">
-<pre>2017-03-06 18:22:50,096 [INFO] Found the following table names:
-2017-03-06 18:22:50,099 [INFO] test_table_1
-2017-03-06 18:22:50,101 [INFO] test_table_1.json
-2017-03-06 18:22:50,103 [INFO] test_table_1.orc
-2017-03-06 18:22:50,104 [INFO] test_table_1.parquet
-2017-03-06 18:22:50,106 [INFO] test_table_2
-2017-03-06 18:22:50,106 [INFO] test_table_2.json
-2017-03-06 18:22:50,107 [INFO] test_table_2.orc
-2017-03-06 18:22:50,110 [INFO] test_table_2.parquet
+<pre>2017-03-06 19:30:01,495 [INFO] Found the following table names:
+2017-03-06 19:30:01,497 [INFO] test_table_1
+2017-03-06 19:30:01,499 [INFO] test_table_1.json
+2017-03-06 19:30:01,501 [INFO] test_table_1.orc
+2017-03-06 19:30:01,502 [INFO] test_table_1.parquet
+2017-03-06 19:30:01,519 [INFO] test_table_2
+2017-03-06 19:30:01,520 [INFO] test_table_2.json
+2017-03-06 19:30:01,520 [INFO] test_table_2.orc
+2017-03-06 19:30:01,521 [INFO] test_table_2.parquet
 </pre>
 </div>
 </div>
@@ -1451,11 +1473,11 @@ h6:hover .anchor-link {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[8]:</div>
+<div class="prompt input_prompt">In&nbsp;[9]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">tables_dataframe</span><span class="p">[</span><span class="s1">&#39;table_row_count&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tables_dataframe</span><span class="p">[</span><span class="s1">&#39;table_name&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span>
-    <span class="k">lambda</span> <span class="n">table_name</span><span class="p">:</span> <span class="n">sqlContext</span><span class="o">.</span><span class="n">table</span><span class="p">(</span><span class="s2">&quot;`&quot;</span> <span class="o">+</span> <span class="n">table_name</span> <span class="o">+</span> <span class="s2">&quot;`&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">count</span><span class="p">())</span>
+    <span class="k">lambda</span> <span class="n">table_name</span><span class="p">:</span> <span class="n">spark</span><span class="o">.</span><span class="n">table</span><span class="p">(</span><span class="s2">&quot;`&quot;</span> <span class="o">+</span> <span class="n">table_name</span> <span class="o">+</span> <span class="s2">&quot;`&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">count</span><span class="p">())</span>
 <span class="n">bins</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100000</span><span class="p">,</span> <span class="mi">1000000</span><span class="p">,</span> <span class="mi">10000000</span><span class="p">,</span> <span class="mi">1000000000</span><span class="p">]</span>
 <span class="n">label_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Small&#39;</span><span class="p">,</span> <span class="s1">&#39;Medium&#39;</span><span class="p">,</span> <span class="s1">&#39;Large&#39;</span><span class="p">,</span> <span class="s1">&#39;X-Large&#39;</span><span class="p">]</span>
 <span class="n">tables_dataframe</span><span class="p">[</span><span class="s1">&#39;table_size_category&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pandas</span><span class="o">.</span><span class="n">cut</span><span class="p">(</span><span class="n">tables_dataframe</span><span class="p">[</span><span class="s1">&#39;table_row_count&#39;</span><span class="p">],</span> <span class="n">bins</span><span class="p">,</span>
@@ -1475,7 +1497,7 @@ h6:hover .anchor-link {
 <div class="prompt"></div>
 
 <div class="output_subarea output_stream output_stderr output_text">
-<pre>2017-03-06 18:23:01,349 [INFO]              table_name  table_row_count table_size_category
+<pre>2017-03-06 19:30:24,254 [INFO]              table_name  table_row_count table_size_category
 0          test_table_1           460949              Medium
 1     test_table_1.json           460949              Medium
 2      test_table_1.orc           460949              Medium
@@ -1503,7 +1525,7 @@ h6:hover .anchor-link {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[9]:</div>
+<div class="prompt input_prompt">In&nbsp;[14]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">benchmark</span><span class="p">():</span>
@@ -1513,7 +1535,7 @@ h6:hover .anchor-link {
         <span class="k">for</span> <span class="n">query_index</span><span class="p">,</span> <span class="n">query_row</span> <span class="ow">in</span> <span class="n">queries_dataframe</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
             
             <span class="c1"># Query builder</span>
-            <span class="n">datatypes_dataframe</span> <span class="o">=</span> <span class="n">pandas</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">sqlContext</span><span class="o">.</span><span class="n">table</span><span class="p">(</span><span class="s1">&#39;`&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">table_row</span><span class="p">[</span><span class="s1">&#39;table_name&#39;</span><span class="p">])</span> <span class="o">+</span> <span class="s1">&#39;`&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">jsonValue</span><span class="p">()[</span><span class="s1">&#39;fields&#39;</span><span class="p">])</span>
+            <span class="n">datatypes_dataframe</span> <span class="o">=</span> <span class="n">pandas</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">spark</span><span class="o">.</span><span class="n">table</span><span class="p">(</span><span class="s1">&#39;`&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">table_row</span><span class="p">[</span><span class="s1">&#39;table_name&#39;</span><span class="p">])</span> <span class="o">+</span> <span class="s1">&#39;`&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">jsonValue</span><span class="p">()[</span><span class="s1">&#39;fields&#39;</span><span class="p">])</span>
             <span class="n">numeric_columns</span> <span class="o">=</span> <span class="n">datatypes_dataframe</span><span class="p">[</span><span class="n">datatypes_dataframe</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">isin</span><span class="p">([</span><span class="s1">&#39;integer&#39;</span><span class="p">,</span> <span class="s1">&#39;long&#39;</span><span class="p">,</span> <span class="s1">&#39;double&#39;</span><span class="p">])][</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
             <span class="n">character_columns</span> <span class="o">=</span> <span class="n">datatypes_dataframe</span><span class="p">[</span><span class="n">datatypes_dataframe</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">isin</span><span class="p">([</span><span class="s1">&#39;string&#39;</span><span class="p">])][</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>  <span class="c1"># non-numeric columns</span>
             <span class="k">if</span> <span class="p">(</span><span class="n">numeric_columns</span><span class="o">.</span><span class="n">empty</span> <span class="ow">or</span> <span class="n">character_columns</span><span class="o">.</span><span class="n">empty</span><span class="p">):</span>
@@ -1532,7 +1554,7 @@ h6:hover .anchor-link {
             <span class="n">sql</span> <span class="o">=</span> <span class="n">query_row</span><span class="p">[</span><span class="s1">&#39;query_template&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">**</span><span class="n">query_builder_dict</span><span class="p">)</span>
             <span class="k">with</span> <span class="n">Timer</span><span class="p">()</span> <span class="k">as</span> <span class="n">t</span><span class="p">:</span>
                 <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">sql</span><span class="p">)</span>
-                <span class="n">dataframe</span> <span class="o">=</span> <span class="n">sqlContext</span><span class="o">.</span><span class="n">sql</span><span class="p">(</span><span class="n">sql</span><span class="p">)</span>
+                <span class="n">dataframe</span> <span class="o">=</span> <span class="n">spark</span><span class="o">.</span><span class="n">sql</span><span class="p">(</span><span class="n">sql</span><span class="p">)</span>
                 <span class="n">query_row</span><span class="p">[</span><span class="s1">&#39;rows&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dataframe</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
             <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Query &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">query_row</span><span class="p">[</span><span class="s1">&#39;query_id&#39;</span><span class="p">])</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="s1">&#39;:  </span><span class="si">{:f}</span><span class="s1"> sec&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">interval</span><span class="p">)))</span>
             <span class="n">query_row</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">interval</span><span class="p">)</span>
@@ -1550,7 +1572,7 @@ h6:hover .anchor-link {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[10]:</div>
+<div class="prompt input_prompt">In&nbsp;[15]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">csv_filepath</span> <span class="o">=</span> <span class="s1">&#39;tempresults.csv&#39;</span>
@@ -1580,141 +1602,259 @@ h6:hover .anchor-link {
 <div class="prompt"></div>
 
 <div class="output_subarea output_stream output_stderr output_text">
-<pre>2017-03-06 18:24:37,916 [INFO] Benchmarking table: test_table_1
-2017-03-06 18:24:41,747 [INFO] Query 1:  3.784569 sec
-2017-03-06 18:24:45,272 [INFO] Query 2:  3.435986 sec
-2017-03-06 18:24:48,561 [INFO] Query 3:  3.220679 sec
-2017-03-06 18:24:52,141 [INFO] Query 4:  3.532028 sec
-2017-03-06 18:24:55,903 [INFO] Query 5:  3.658149 sec
-2017-03-06 18:24:59,335 [INFO] Query 6:  3.383215 sec
-2017-03-06 18:25:02,914 [INFO] Query 7:  3.449616 sec
-2017-03-06 18:25:06,254 [INFO] Query 8:  3.303245 sec
-2017-03-06 18:25:09,985 [INFO] Query 9:  3.686394 sec
-2017-03-06 18:25:16,526 [INFO] Query 10:  6.489271 sec
-2017-03-06 18:25:19,992 [INFO] Query 11:  3.423821 sec
-2017-03-06 18:25:20,327 [INFO] Query 12:  0.272422 sec
-2017-03-06 18:25:24,078 [INFO] Query 13:  3.715508 sec
-2017-03-06 18:25:27,589 [INFO] Query 14:  3.455086 sec
-2017-03-06 18:25:27,909 [INFO] Query 15:  0.273223 sec
-2017-03-06 18:25:28,186 [INFO] Query 16:  0.225212 sec
-2017-03-06 18:25:31,992 [INFO] Query 17:  3.758462 sec
-2017-03-06 18:25:35,439 [INFO] Query 18:  3.400007 sec
-2017-03-06 18:25:39,058 [INFO] Query 19:  3.580909 sec
-2017-03-06 18:25:43,037 [INFO] Query 20:  3.932191 sec
-2017-03-06 18:25:55,724 [INFO] Query 21:  12.646464 sec
-2017-03-06 18:26:20,534 [INFO] Query 22:  24.773668 sec
-2017-03-06 18:26:21,479 [INFO] Query 23:  0.903557 sec
-2017-03-06 18:26:25,221 [INFO] Query 24:  3.700274 sec
-2017-03-06 18:26:29,436 [INFO] Query 25:  4.170478 sec
-2017-03-06 18:26:36,395 [INFO] Query 26:  6.876760 sec
-2017-03-06 18:26:43,849 [INFO] Query 27:  7.406655 sec
-2017-03-06 18:26:51,273 [INFO] Query 28:  7.382196 sec
-2017-03-06 18:26:56,939 [INFO] Query 29:  5.629171 sec
-2017-03-06 18:27:02,391 [INFO] Query 30:  5.417879 sec
-2017-03-06 18:27:02,401 [INFO] Benchmarking table: test_table_1.json
-2017-03-06 18:27:08,925 [INFO] Query 1:  6.489260 sec
-2017-03-06 18:27:15,716 [INFO] Query 2:  6.750238 sec
-2017-03-06 18:27:21,577 [INFO] Query 3:  5.818746 sec
-2017-03-06 18:27:27,678 [INFO] Query 4:  6.066425 sec
-2017-03-06 18:27:34,166 [INFO] Query 5:  6.454322 sec
-2017-03-06 18:27:40,462 [INFO] Query 6:  6.187630 sec
-2017-03-06 18:27:46,673 [INFO] Query 7:  6.175703 sec
-2017-03-06 18:27:53,342 [INFO] Query 8:  6.638215 sec
-2017-03-06 18:27:59,609 [INFO] Query 9:  6.231776 sec
-2017-03-06 18:28:08,810 [INFO] Query 10:  9.167687 sec
-2017-03-06 18:28:15,906 [INFO] Query 11:  7.059134 sec
-2017-03-06 18:28:16,786 [INFO] Query 12:  0.820396 sec
-2017-03-06 18:28:23,118 [INFO] Query 13:  6.226962 sec
-2017-03-06 18:28:29,819 [INFO] Query 14:  6.667966 sec
-2017-03-06 18:28:30,179 [INFO] Query 15:  0.321319 sec
-2017-03-06 18:28:30,551 [INFO] Query 16:  0.313896 sec
-2017-03-06 18:28:36,743 [INFO] Query 17:  6.153502 sec
-2017-03-06 18:28:36,951 [INFO] Query 18:  0.173285 sec
-2017-03-06 18:28:43,925 [INFO] Query 19:  6.950466 sec
-2017-03-06 18:28:50,714 [INFO] Query 20:  6.760211 sec
-2017-03-06 18:29:09,389 [INFO] Query 21:  18.637178 sec
-2017-03-06 18:29:30,947 [INFO] Query 22:  21.525920 sec
-2017-03-06 18:29:31,307 [INFO] Query 23:  0.321284 sec
-2017-03-06 18:29:39,961 [INFO] Query 24:  8.624466 sec
-2017-03-06 18:29:48,015 [INFO] Query 25:  8.016409 sec
-2017-03-06 18:29:55,675 [INFO] Query 26:  7.626479 sec
+<pre>2017-03-06 19:32:13,266 [INFO] Benchmarking table: test_table_1
+2017-03-06 19:32:17,091 [INFO] Query 1:  3.784965 sec
+2017-03-06 19:32:20,759 [INFO] Query 2:  3.597519 sec
+2017-03-06 19:32:24,670 [INFO] Query 3:  3.845127 sec
+2017-03-06 19:32:28,583 [INFO] Query 4:  3.866383 sec
+2017-03-06 19:32:32,031 [INFO] Query 5:  3.382424 sec
+2017-03-06 19:32:35,576 [INFO] Query 6:  3.495031 sec
+2017-03-06 19:32:39,139 [INFO] Query 7:  3.506386 sec
+2017-03-06 19:32:42,543 [INFO] Query 8:  3.279761 sec
+2017-03-06 19:32:45,909 [INFO] Query 9:  3.321665 sec
+2017-03-06 19:32:52,261 [INFO] Query 10:  6.301785 sec
+2017-03-06 19:32:55,999 [INFO] Query 11:  3.632919 sec
+2017-03-06 19:32:56,264 [INFO] Query 12:  0.215368 sec
+2017-03-06 19:33:00,095 [INFO] Query 13:  3.757411 sec
+2017-03-06 19:33:03,536 [INFO] Query 14:  3.395210 sec
+2017-03-06 19:33:03,914 [INFO] Query 15:  0.323767 sec
+2017-03-06 19:33:04,175 [INFO] Query 16:  0.210809 sec
+2017-03-06 19:33:07,794 [INFO] Query 17:  3.553201 sec
+2017-03-06 19:33:11,362 [INFO] Query 18:  3.528273 sec
+2017-03-06 19:33:14,926 [INFO] Query 19:  3.471829 sec
+2017-03-06 19:33:18,721 [INFO] Query 20:  3.719609 sec
+2017-03-06 19:33:31,007 [INFO] Query 21:  12.216270 sec
+2017-03-06 19:33:44,102 [INFO] Query 22:  13.046521 sec
+2017-03-06 19:33:44,458 [INFO] Query 23:  0.282421 sec
+2017-03-06 19:33:48,940 [INFO] Query 24:  4.410465 sec
+2017-03-06 19:33:52,931 [INFO] Query 25:  3.936008 sec
+2017-03-06 19:33:56,416 [INFO] Query 26:  3.407512 sec
+2017-03-06 19:34:03,596 [INFO] Query 27:  7.115292 sec
+2017-03-06 19:34:11,187 [INFO] Query 28:  7.531629 sec
+2017-03-06 19:34:18,008 [INFO] Query 29:  6.785415 sec
+2017-03-06 19:45:34,469 [INFO] Query 30:  676.367496 sec
+2017-03-06 19:45:34,480 [INFO] Benchmarking table: test_table_1.json
+2017-03-06 19:45:40,942 [INFO] Query 1:  6.437083 sec
+2017-03-06 19:45:47,118 [INFO] Query 2:  6.137408 sec
+2017-03-06 19:45:53,932 [INFO] Query 3:  6.742814 sec
+2017-03-06 19:46:00,883 [INFO] Query 4:  6.889241 sec
+2017-03-06 19:46:07,897 [INFO] Query 5:  6.964419 sec
+2017-03-06 19:46:14,269 [INFO] Query 6:  6.334419 sec
+2017-03-06 19:46:20,726 [INFO] Query 7:  6.398903 sec
+2017-03-06 19:46:26,975 [INFO] Query 8:  6.206435 sec
+2017-03-06 19:46:34,003 [INFO] Query 9:  6.970915 sec
+2017-03-06 19:46:43,100 [INFO] Query 10:  9.043335 sec
+2017-03-06 19:46:49,429 [INFO] Query 11:  6.242626 sec
+2017-03-06 19:46:49,866 [INFO] Query 12:  0.379502 sec
+2017-03-06 19:46:56,888 [INFO] Query 13:  6.954290 sec
+2017-03-06 19:47:03,754 [INFO] Query 14:  6.810468 sec
+2017-03-06 19:47:03,960 [INFO] Query 15:  0.152174 sec
+2017-03-06 19:47:04,150 [INFO] Query 16:  0.145780 sec
+2017-03-06 19:47:11,243 [INFO] Query 17:  7.038342 sec
+2017-03-06 19:47:17,743 [INFO] Query 18:  6.466745 sec
+2017-03-06 19:47:24,722 [INFO] Query 19:  6.890854 sec
+2017-03-06 19:47:31,535 [INFO] Query 20:  6.756323 sec
+2017-03-06 19:47:55,610 [INFO] Query 21:  24.041726 sec
+2017-03-06 19:48:14,834 [INFO] Query 22:  19.187738 sec
+2017-03-06 19:48:15,188 [INFO] Query 23:  0.320984 sec
+2017-03-06 19:48:24,933 [INFO] Query 24:  9.648049 sec
+2017-03-06 19:48:37,534 [INFO] Query 25:  12.476897 sec
+2017-03-06 19:48:46,566 [INFO] Query 26:  8.978777 sec
+2017-03-06 19:52:31,163 [INFO] Query 27:  224.525143 sec
+2017-03-06 19:52:40,267 [INFO] Query 28:  9.081510 sec
+2017-03-06 19:52:56,764 [INFO] Query 29:  16.461522 sec
+2017-03-06 19:53:15,745 [INFO] Query 30:  18.953250 sec
+2017-03-06 19:53:15,754 [INFO] Benchmarking table: test_table_1.orc
+2017-03-06 19:53:16,075 [INFO] Query 1:  0.274048 sec
+2017-03-06 19:53:16,306 [INFO] Query 2:  0.189931 sec
+2017-03-06 19:53:16,561 [INFO] Query 3:  0.227081 sec
+2017-03-06 19:53:16,932 [INFO] Query 4:  0.320501 sec
+2017-03-06 19:53:17,197 [INFO] Query 5:  0.181794 sec
+2017-03-06 19:53:17,405 [INFO] Query 6:  0.178134 sec
+2017-03-06 19:53:17,712 [INFO] Query 7:  0.279538 sec
+2017-03-06 19:53:18,029 [INFO] Query 8:  0.249303 sec
+2017-03-06 19:53:18,277 [INFO] Query 9:  0.172426 sec
+2017-03-06 19:53:20,063 [INFO] Query 10:  1.739912 sec
+2017-03-06 19:53:20,331 [INFO] Query 11:  0.237119 sec
+2017-03-06 19:53:20,472 [INFO] Query 12:  0.115604 sec
+2017-03-06 19:53:20,979 [INFO] Query 13:  0.461573 sec
+2017-03-06 19:53:21,523 [INFO] Query 14:  0.503647 sec
+2017-03-06 19:53:21,713 [INFO] Query 15:  0.165155 sec
+2017-03-06 19:53:21,870 [INFO] Query 16:  0.114689 sec
+2017-03-06 19:53:22,283 [INFO] Query 17:  0.366174 sec
+2017-03-06 19:53:22,680 [INFO] Query 18:  0.350181 sec
+2017-03-06 19:53:23,064 [INFO] Query 19:  0.356844 sec
+2017-03-06 19:53:23,445 [INFO] Query 20:  0.354412 sec
+2017-03-06 19:53:29,837 [INFO] Query 21:  6.357069 sec
+2017-03-06 19:53:34,690 [INFO] Query 22:  4.827069 sec
+2017-03-06 19:53:35,079 [INFO] Query 23:  0.362813 sec
+2017-03-06 19:53:37,358 [INFO] Query 24:  2.240673 sec
+2017-03-06 19:53:37,817 [INFO] Query 25:  0.395598 sec
+2017-03-06 19:53:38,383 [INFO] Query 26:  0.540826 sec
+2017-03-06 19:53:39,217 [INFO] Query 27:  0.722659 sec
+2017-03-06 19:53:39,981 [INFO] Query 28:  0.727725 sec
+2017-03-06 19:53:41,464 [INFO] Query 29:  1.445685 sec
+2017-03-06 19:53:42,221 [INFO] Query 30:  0.718458 sec
+2017-03-06 19:53:42,231 [INFO] Benchmarking table: test_table_1.parquet
+2017-03-06 19:53:43,024 [INFO] Query 1:  0.759763 sec
+2017-03-06 19:53:43,146 [INFO] Query 2:  0.092717 sec
+2017-03-06 19:53:43,287 [INFO] Query 3:  0.101117 sec
+2017-03-06 19:53:43,416 [INFO] Query 4:  0.086557 sec
+2017-03-06 19:53:43,586 [INFO] Query 5:  0.142955 sec
+2017-03-06 19:53:43,727 [INFO] Query 6:  0.112277 sec
+2017-03-06 19:53:44,019 [INFO] Query 7:  0.265187 sec
+2017-03-06 19:53:44,233 [INFO] Query 8:  0.166177 sec
+2017-03-06 19:53:44,357 [INFO] Query 9:  0.097349 sec
+2017-03-06 19:53:46,011 [INFO] Query 10:  1.621421 sec
+2017-03-06 19:53:46,155 [INFO] Query 11:  0.116976 sec
+2017-03-06 19:53:46,267 [INFO] Query 12:  0.085843 sec
+2017-03-06 19:53:46,535 [INFO] Query 13:  0.235400 sec
+2017-03-06 19:53:46,873 [INFO] Query 14:  0.300810 sec
+2017-03-06 19:53:47,035 [INFO] Query 15:  0.126870 sec
+2017-03-06 19:53:47,295 [INFO] Query 16:  0.230636 sec
+2017-03-06 19:53:47,560 [INFO] Query 17:  0.213985 sec
+2017-03-06 19:53:47,674 [INFO] Query 18:  0.077559 sec
+2017-03-06 19:53:48,464 [INFO] Query 19:  0.734535 sec
+2017-03-06 19:53:48,633 [INFO] Query 20:  0.142128 sec
+2017-03-06 19:53:59,660 [INFO] Query 21:  10.970894 sec
+2017-03-06 19:54:04,476 [INFO] Query 22:  4.561763 sec
+2017-03-06 19:54:04,711 [INFO] Query 23:  0.173650 sec
+2017-03-06 19:54:05,044 [INFO] Query 24:  0.294089 sec
+2017-03-06 19:54:05,474 [INFO] Query 25:  0.404083 sec
+2017-03-06 19:54:05,881 [INFO] Query 26:  0.343744 sec
+2017-03-06 19:54:06,543 [INFO] Query 27:  0.610989 sec
+2017-03-06 19:54:06,852 [INFO] Query 28:  0.276061 sec
+2017-03-06 19:54:07,207 [INFO] Query 29:  0.323810 sec
+2017-03-06 19:54:07,992 [INFO] Query 30:  0.748972 sec
+2017-03-06 19:54:08,001 [INFO] Benchmarking table: test_table_2
+2017-03-06 19:54:08,110 [INFO] Query 1:  0.080699 sec
+2017-03-06 19:54:08,198 [INFO] Query 2:  0.070569 sec
+2017-03-06 19:54:08,285 [INFO] Query 3:  0.067948 sec
+2017-03-06 19:54:08,408 [INFO] Query 4:  0.105694 sec
+2017-03-06 19:54:08,505 [INFO] Query 5:  0.043501 sec
+2017-03-06 19:54:08,571 [INFO] Query 6:  0.045177 sec
+2017-03-06 19:54:08,682 [INFO] Query 7:  0.073113 sec
+2017-03-06 19:54:08,751 [INFO] Query 8:  0.048643 sec
+2017-03-06 19:54:08,823 [INFO] Query 9:  0.050379 sec
+2017-03-06 19:54:09,749 [INFO] Query 10:  0.908613 sec
+2017-03-06 19:54:09,824 [INFO] Query 11:  0.059032 sec
+2017-03-06 19:54:09,969 [INFO] Query 12:  0.126615 sec
+2017-03-06 19:54:10,048 [INFO] Query 13:  0.061131 sec
+2017-03-06 19:54:10,147 [INFO] Query 14:  0.081832 sec
+2017-03-06 19:54:10,229 [INFO] Query 15:  0.052872 sec
+2017-03-06 19:54:10,339 [INFO] Query 16:  0.088027 sec
+2017-03-06 19:54:10,459 [INFO] Query 17:  0.101133 sec
+2017-03-06 19:54:10,553 [INFO] Query 18:  0.075164 sec
+2017-03-06 19:54:10,635 [INFO] Query 19:  0.064190 sec
+2017-03-06 19:54:10,719 [INFO] Query 20:  0.065309 sec
+2017-03-06 19:54:11,841 [INFO] Query 21:  1.104960 sec
+2017-03-06 19:54:12,688 [INFO] Query 22:  0.829194 sec
+2017-03-06 19:54:12,783 [INFO] Query 23:  0.072108 sec
+2017-03-06 19:54:13,082 [INFO] Query 24:  0.275178 sec
+2017-03-06 19:54:13,247 [INFO] Query 25:  0.127781 sec
+2017-03-06 19:54:13,423 [INFO] Query 26:  0.158159 sec
+2017-03-06 19:54:13,601 [INFO] Query 27:  0.162050 sec
+2017-03-06 19:54:13,802 [INFO] Query 28:  0.183362 sec
+2017-03-06 19:54:13,932 [INFO] Query 29:  0.105383 sec
+2017-03-06 19:54:14,121 [INFO] Query 30:  0.158709 sec
+2017-03-06 19:54:14,131 [INFO] Benchmarking table: test_table_2.json
+2017-03-06 19:54:14,241 [INFO] Query 1:  0.058648 sec
+2017-03-06 19:54:14,325 [INFO] Query 2:  0.060638 sec
+2017-03-06 19:54:14,418 [INFO] Query 3:  0.075045 sec
+2017-03-06 19:54:14,522 [INFO] Query 4:  0.065606 sec
+2017-03-06 19:54:14,595 [INFO] Query 5:  0.055773 sec
+2017-03-06 19:54:14,695 [INFO] Query 6:  0.081539 sec
+2017-03-06 19:54:14,778 [INFO] Query 7:  0.055505 sec
+2017-03-06 19:54:14,869 [INFO] Query 8:  0.054801 sec
+2017-03-06 19:54:14,958 [INFO] Query 9:  0.061652 sec
+2017-03-06 19:54:15,786 [INFO] Query 10:  0.799619 sec
+2017-03-06 19:54:15,863 [INFO] Query 11:  0.054854 sec
+2017-03-06 19:54:15,941 [INFO] Query 12:  0.048063 sec
+2017-03-06 19:54:16,044 [INFO] Query 13:  0.057170 sec
+2017-03-06 19:54:16,172 [INFO] Query 14:  0.094093 sec
+2017-03-06 19:54:16,242 [INFO] Query 15:  0.048189 sec
+2017-03-06 19:54:16,401 [INFO] Query 16:  0.143046 sec
+2017-03-06 19:54:16,572 [INFO] Query 17:  0.153151 sec
+2017-03-06 19:54:16,687 [INFO] Query 18:  0.095908 sec
+2017-03-06 19:54:16,778 [INFO] Query 19:  0.070153 sec
+2017-03-06 19:54:17,141 [INFO] Query 20:  0.345968 sec
+2017-03-06 19:54:18,046 [INFO] Query 21:  0.887299 sec
+2017-03-06 19:54:18,949 [INFO] Query 22:  0.886029 sec
+2017-03-06 19:54:19,077 [INFO] Query 23:  0.090884 sec
+2017-03-06 19:54:19,251 [INFO] Query 24:  0.156371 sec
+2017-03-06 19:54:19,444 [INFO] Query 25:  0.161723 sec
+2017-03-06 19:54:19,594 [INFO] Query 26:  0.128475 sec
+2017-03-06 19:54:19,846 [INFO] Query 27:  0.232422 sec
+2017-03-06 19:54:20,044 [INFO] Query 28:  0.180470 sec
+2017-03-06 19:54:20,144 [INFO] Query 29:  0.081406 sec
+2017-03-06 19:54:20,267 [INFO] Query 30:  0.106769 sec
+2017-03-06 19:54:20,277 [INFO] Benchmarking table: test_table_2.orc
+2017-03-06 19:54:20,424 [INFO] Query 1:  0.133983 sec
+2017-03-06 19:54:20,507 [INFO] Query 2:  0.066364 sec
+2017-03-06 19:54:20,643 [INFO] Query 3:  0.103666 sec
+2017-03-06 19:54:20,715 [INFO] Query 4:  0.054726 sec
+2017-03-06 19:54:20,808 [INFO] Query 5:  0.073193 sec
+2017-03-06 19:54:20,893 [INFO] Query 6:  0.062001 sec
+2017-03-06 19:54:20,969 [INFO] Query 7:  0.052293 sec
+2017-03-06 19:54:21,049 [INFO] Query 8:  0.061295 sec
+2017-03-06 19:54:21,134 [INFO] Query 9:  0.065138 sec
+2017-03-06 19:54:22,181 [INFO] Query 10:  1.010457 sec
+2017-03-06 19:54:22,413 [INFO] Query 11:  0.214662 sec
+2017-03-06 19:54:22,502 [INFO] Query 12:  0.061289 sec
+2017-03-06 19:54:22,587 [INFO] Query 13:  0.065493 sec
+2017-03-06 19:54:22,677 [INFO] Query 14:  0.068821 sec
+2017-03-06 19:54:22,871 [INFO] Query 15:  0.165214 sec
+2017-03-06 19:54:22,956 [INFO] Query 16:  0.067874 sec
+2017-03-06 19:54:23,063 [INFO] Query 17:  0.072827 sec
+2017-03-06 19:54:23,222 [INFO] Query 18:  0.095826 sec
+2017-03-06 19:54:23,395 [INFO] Query 19:  0.116051 sec
+2017-03-06 19:54:23,491 [INFO] Query 20:  0.079468 sec
+2017-03-06 19:54:25,085 [INFO] Query 21:  1.548342 sec
+2017-03-06 19:54:26,028 [INFO] Query 22:  0.911567 sec
+2017-03-06 19:54:26,243 [INFO] Query 23:  0.193803 sec
+2017-03-06 19:54:26,433 [INFO] Query 24:  0.160604 sec
+2017-03-06 19:54:26,686 [INFO] Query 25:  0.223147 sec
+2017-03-06 19:54:26,893 [INFO] Query 26:  0.190798 sec
+2017-03-06 19:54:27,140 [INFO] Query 27:  0.220742 sec
+2017-03-06 19:54:27,334 [INFO] Query 28:  0.175658 sec
+2017-03-06 19:54:27,575 [INFO] Query 29:  0.204300 sec
+2017-03-06 19:54:27,766 [INFO] Query 30:  0.135481 sec
+2017-03-06 19:54:27,777 [INFO] Benchmarking table: test_table_2.parquet
+2017-03-06 19:54:27,973 [INFO] Query 1:  0.183151 sec
+2017-03-06 19:54:28,065 [INFO] Query 2:  0.062938 sec
+2017-03-06 19:54:28,180 [INFO] Query 3:  0.089093 sec
+2017-03-06 19:54:28,354 [INFO] Query 4:  0.137348 sec
+2017-03-06 19:54:28,467 [INFO] Query 5:  0.083863 sec
+2017-03-06 19:54:28,542 [INFO] Query 6:  0.055587 sec
+2017-03-06 19:54:28,651 [INFO] Query 7:  0.073201 sec
+2017-03-06 19:54:28,795 [INFO] Query 8:  0.123416 sec
+2017-03-06 19:54:28,888 [INFO] Query 9:  0.073470 sec
+2017-03-06 19:54:29,735 [INFO] Query 10:  0.754702 sec
+2017-03-06 19:54:29,811 [INFO] Query 11:  0.054701 sec
+2017-03-06 19:54:29,904 [INFO] Query 12:  0.059858 sec
+2017-03-06 19:54:30,017 [INFO] Query 13:  0.095132 sec
+2017-03-06 19:54:30,155 [INFO] Query 14:  0.122431 sec
+2017-03-06 19:54:30,282 [INFO] Query 15:  0.092727 sec
+2017-03-06 19:54:30,361 [INFO] Query 16:  0.060377 sec
+2017-03-06 19:54:30,480 [INFO] Query 17:  0.059261 sec
+2017-03-06 19:54:30,566 [INFO] Query 18:  0.067166 sec
+2017-03-06 19:54:30,673 [INFO] Query 19:  0.081343 sec
+2017-03-06 19:54:30,756 [INFO] Query 20:  0.064324 sec
+2017-03-06 19:54:31,621 [INFO] Query 21:  0.824499 sec
+2017-03-06 19:54:32,439 [INFO] Query 22:  0.799587 sec
+2017-03-06 19:54:32,753 [INFO] Query 23:  0.276964 sec
+2017-03-06 19:54:32,927 [INFO] Query 24:  0.138156 sec
+2017-03-06 19:54:33,056 [INFO] Query 25:  0.109829 sec
+2017-03-06 19:54:33,295 [INFO] Query 26:  0.209222 sec
+2017-03-06 19:54:33,514 [INFO] Query 27:  0.195911 sec
+2017-03-06 19:54:33,715 [INFO] Query 28:  0.181017 sec
+2017-03-06 19:54:33,915 [INFO] Query 29:  0.167185 sec
+2017-03-06 19:54:34,093 [INFO] Query 30:  0.161163 sec
+2017-03-06 19:54:34,126 [INFO] Spark SQL benchmark time: 1340.8608796 sec
 </pre>
 </div>
 </div>
 
-<div class="output_area">
-<div class="prompt"></div>
-
-<div class="output_subarea output_text output_error">
-<pre>
-<span class="ansi-red-intense-fg ansi-bold">---------------------------------------------------------------------------</span>
-<span class="ansi-red-intense-fg ansi-bold">KeyboardInterrupt</span>                         Traceback (most recent call last)
-<span class="ansi-green-intense-fg ansi-bold">&lt;ipython-input-10-062bfce25d9c&gt;</span> in <span class="ansi-cyan-fg">&lt;module&gt;</span><span class="ansi-blue-intense-fg ansi-bold">()</span>
-<span class="ansi-green-fg">      8</span> <span class="ansi-green-intense-fg ansi-bold">if</span> <span class="ansi-green-intense-fg ansi-bold">not</span> queries_dataframe<span class="ansi-yellow-intense-fg ansi-bold">.</span>empty<span class="ansi-yellow-intense-fg ansi-bold">:</span>
-<span class="ansi-green-fg">      9</span>     <span class="ansi-green-intense-fg ansi-bold">with</span> Timer<span class="ansi-yellow-intense-fg ansi-bold">(</span><span class="ansi-yellow-intense-fg ansi-bold">)</span> <span class="ansi-green-intense-fg ansi-bold">as</span> t<span class="ansi-yellow-intense-fg ansi-bold">:</span>
-<span class="ansi-green-intense-fg ansi-bold">---&gt; 10</span><span class="ansi-yellow-intense-fg ansi-bold">         </span>benchmark<span class="ansi-yellow-intense-fg ansi-bold">(</span><span class="ansi-yellow-intense-fg ansi-bold">)</span>
-<span class="ansi-green-fg">     11</span>     logging<span class="ansi-yellow-intense-fg ansi-bold">.</span>info<span class="ansi-yellow-intense-fg ansi-bold">(</span>database <span class="ansi-yellow-intense-fg ansi-bold">+</span> <span class="ansi-blue-intense-fg ansi-bold">&#39; benchmark time: %.07f sec&#39;</span> <span class="ansi-yellow-intense-fg ansi-bold">%</span> t<span class="ansi-yellow-intense-fg ansi-bold">.</span>interval<span class="ansi-yellow-intense-fg ansi-bold">)</span>
-<span class="ansi-green-fg">     12</span> <span class="ansi-green-intense-fg ansi-bold">else</span><span class="ansi-yellow-intense-fg ansi-bold">:</span>
-
-<span class="ansi-green-intense-fg ansi-bold">&lt;ipython-input-9-2e629fc2aa5d&gt;</span> in <span class="ansi-cyan-fg">benchmark</span><span class="ansi-blue-intense-fg ansi-bold">()</span>
-<span class="ansi-green-fg">     27</span>                 logging<span class="ansi-yellow-intense-fg ansi-bold">.</span>debug<span class="ansi-yellow-intense-fg ansi-bold">(</span>sql<span class="ansi-yellow-intense-fg ansi-bold">)</span>
-<span class="ansi-green-fg">     28</span>                 dataframe <span class="ansi-yellow-intense-fg ansi-bold">=</span> sqlContext<span class="ansi-yellow-intense-fg ansi-bold">.</span>sql<span class="ansi-yellow-intense-fg ansi-bold">(</span>sql<span class="ansi-yellow-intense-fg ansi-bold">)</span>
-<span class="ansi-green-intense-fg ansi-bold">---&gt; 29</span><span class="ansi-yellow-intense-fg ansi-bold">                 </span>query_row<span class="ansi-yellow-intense-fg ansi-bold">[</span><span class="ansi-blue-intense-fg ansi-bold">&#39;rows&#39;</span><span class="ansi-yellow-intense-fg ansi-bold">]</span> <span class="ansi-yellow-intense-fg ansi-bold">=</span> dataframe<span class="ansi-yellow-intense-fg ansi-bold">.</span>count<span class="ansi-yellow-intense-fg ansi-bold">(</span><span class="ansi-yellow-intense-fg ansi-bold">)</span>
-<span class="ansi-green-fg">     30</span>             logging<span class="ansi-yellow-intense-fg ansi-bold">.</span>info<span class="ansi-yellow-intense-fg ansi-bold">(</span><span class="ansi-blue-intense-fg ansi-bold">&#34;Query &#34;</span> <span class="ansi-yellow-intense-fg ansi-bold">+</span> str<span class="ansi-yellow-intense-fg ansi-bold">(</span>query_row<span class="ansi-yellow-intense-fg ansi-bold">[</span><span class="ansi-blue-intense-fg ansi-bold">&#39;query_id&#39;</span><span class="ansi-yellow-intense-fg ansi-bold">]</span><span class="ansi-yellow-intense-fg ansi-bold">)</span> <span class="ansi-yellow-intense-fg ansi-bold">+</span> str<span class="ansi-yellow-intense-fg ansi-bold">(</span><span class="ansi-blue-intense-fg ansi-bold">&#39;:  {:f} sec&#39;</span><span class="ansi-yellow-intense-fg ansi-bold">.</span>format<span class="ansi-yellow-intense-fg ansi-bold">(</span>t<span class="ansi-yellow-intense-fg ansi-bold">.</span>interval<span class="ansi-yellow-intense-fg ansi-bold">)</span><span class="ansi-yellow-intense-fg ansi-bold">)</span><span class="ansi-yellow-intense-fg ansi-bold">)</span>
-<span class="ansi-green-fg">     31</span>             query_row<span class="ansi-yellow-intense-fg ansi-bold">[</span><span class="ansi-blue-intense-fg ansi-bold">&#39;time&#39;</span><span class="ansi-yellow-intense-fg ansi-bold">]</span> <span class="ansi-yellow-intense-fg ansi-bold">=</span> float<span class="ansi-yellow-intense-fg ansi-bold">(</span>t<span class="ansi-yellow-intense-fg ansi-bold">.</span>interval<span class="ansi-yellow-intense-fg ansi-bold">)</span>
-
-<span class="ansi-green-intense-fg ansi-bold">/opt/spark/python/pyspark/sql/dataframe.py</span> in <span class="ansi-cyan-fg">count</span><span class="ansi-blue-intense-fg ansi-bold">(self)</span>
-<span class="ansi-green-fg">    378</span>         <span class="ansi-cyan-intense-fg ansi-bold">2</span>
-<span class="ansi-green-fg">    379</span>         &#34;&#34;&#34;
-<span class="ansi-green-intense-fg ansi-bold">--&gt; 380</span><span class="ansi-yellow-intense-fg ansi-bold">         </span><span class="ansi-green-intense-fg ansi-bold">return</span> int<span class="ansi-yellow-intense-fg ansi-bold">(</span>self<span class="ansi-yellow-intense-fg ansi-bold">.</span>_jdf<span class="ansi-yellow-intense-fg ansi-bold">.</span>count<span class="ansi-yellow-intense-fg ansi-bold">(</span><span class="ansi-yellow-intense-fg ansi-bold">)</span><span class="ansi-yellow-intense-fg ansi-bold">)</span>
-<span class="ansi-green-fg">    381</span> 
-<span class="ansi-green-fg">    382</span>     <span class="ansi-yellow-intense-fg ansi-bold">@</span>ignore_unicode_prefix
-
-<span class="ansi-green-intense-fg ansi-bold">/opt/spark/python/lib/py4j-0.10.4-src.zip/py4j/java_gateway.py</span> in <span class="ansi-cyan-fg">__call__</span><span class="ansi-blue-intense-fg ansi-bold">(self, *args)</span>
-<span class="ansi-green-fg">   1129</span>             proto<span class="ansi-yellow-intense-fg ansi-bold">.</span>END_COMMAND_PART
-<span class="ansi-green-fg">   1130</span> 
-<span class="ansi-green-intense-fg ansi-bold">-&gt; 1131</span><span class="ansi-yellow-intense-fg ansi-bold">         </span>answer <span class="ansi-yellow-intense-fg ansi-bold">=</span> self<span class="ansi-yellow-intense-fg ansi-bold">.</span>gateway_client<span class="ansi-yellow-intense-fg ansi-bold">.</span>send_command<span class="ansi-yellow-intense-fg ansi-bold">(</span>command<span class="ansi-yellow-intense-fg ansi-bold">)</span>
-<span class="ansi-green-fg">   1132</span>         return_value = get_return_value(
-<span class="ansi-green-fg">   1133</span>             answer, self.gateway_client, self.target_id, self.name)
-
-<span class="ansi-green-intense-fg ansi-bold">/opt/spark/python/lib/py4j-0.10.4-src.zip/py4j/java_gateway.py</span> in <span class="ansi-cyan-fg">send_command</span><span class="ansi-blue-intense-fg ansi-bold">(self, command, retry, binary)</span>
-<span class="ansi-green-fg">    881</span>         connection <span class="ansi-yellow-intense-fg ansi-bold">=</span> self<span class="ansi-yellow-intense-fg ansi-bold">.</span>_get_connection<span class="ansi-yellow-intense-fg ansi-bold">(</span><span class="ansi-yellow-intense-fg ansi-bold">)</span>
-<span class="ansi-green-fg">    882</span>         <span class="ansi-green-intense-fg ansi-bold">try</span><span class="ansi-yellow-intense-fg ansi-bold">:</span>
-<span class="ansi-green-intense-fg ansi-bold">--&gt; 883</span><span class="ansi-yellow-intense-fg ansi-bold">             </span>response <span class="ansi-yellow-intense-fg ansi-bold">=</span> connection<span class="ansi-yellow-intense-fg ansi-bold">.</span>send_command<span class="ansi-yellow-intense-fg ansi-bold">(</span>command<span class="ansi-yellow-intense-fg ansi-bold">)</span>
-<span class="ansi-green-fg">    884</span>             <span class="ansi-green-intense-fg ansi-bold">if</span> binary<span class="ansi-yellow-intense-fg ansi-bold">:</span>
-<span class="ansi-green-fg">    885</span>                 <span class="ansi-green-intense-fg ansi-bold">return</span> response<span class="ansi-yellow-intense-fg ansi-bold">,</span> self<span class="ansi-yellow-intense-fg ansi-bold">.</span>_create_connection_guard<span class="ansi-yellow-intense-fg ansi-bold">(</span>connection<span class="ansi-yellow-intense-fg ansi-bold">)</span>
-
-<span class="ansi-green-intense-fg ansi-bold">/opt/spark/python/lib/py4j-0.10.4-src.zip/py4j/java_gateway.py</span> in <span class="ansi-cyan-fg">send_command</span><span class="ansi-blue-intense-fg ansi-bold">(self, command)</span>
-<span class="ansi-green-fg">   1026</span> 
-<span class="ansi-green-fg">   1027</span>         <span class="ansi-green-intense-fg ansi-bold">try</span><span class="ansi-yellow-intense-fg ansi-bold">:</span>
-<span class="ansi-green-intense-fg ansi-bold">-&gt; 1028</span><span class="ansi-yellow-intense-fg ansi-bold">             </span>answer <span class="ansi-yellow-intense-fg ansi-bold">=</span> smart_decode<span class="ansi-yellow-intense-fg ansi-bold">(</span>self<span class="ansi-yellow-intense-fg ansi-bold">.</span>stream<span class="ansi-yellow-intense-fg ansi-bold">.</span>readline<span class="ansi-yellow-intense-fg ansi-bold">(</span><span class="ansi-yellow-intense-fg ansi-bold">)</span><span class="ansi-yellow-intense-fg ansi-bold">[</span><span class="ansi-yellow-intense-fg ansi-bold">:</span><span class="ansi-yellow-intense-fg ansi-bold">-</span><span class="ansi-cyan-intense-fg ansi-bold">1</span><span class="ansi-yellow-intense-fg ansi-bold">]</span><span class="ansi-yellow-intense-fg ansi-bold">)</span>
-<span class="ansi-green-fg">   1029</span>             logger<span class="ansi-yellow-intense-fg ansi-bold">.</span>debug<span class="ansi-yellow-intense-fg ansi-bold">(</span><span class="ansi-blue-intense-fg ansi-bold">&#34;Answer received: {0}&#34;</span><span class="ansi-yellow-intense-fg ansi-bold">.</span>format<span class="ansi-yellow-intense-fg ansi-bold">(</span>answer<span class="ansi-yellow-intense-fg ansi-bold">)</span><span class="ansi-yellow-intense-fg ansi-bold">)</span>
-<span class="ansi-green-fg">   1030</span>             <span class="ansi-green-intense-fg ansi-bold">if</span> answer<span class="ansi-yellow-intense-fg ansi-bold">.</span>startswith<span class="ansi-yellow-intense-fg ansi-bold">(</span>proto<span class="ansi-yellow-intense-fg ansi-bold">.</span>RETURN_MESSAGE<span class="ansi-yellow-intense-fg ansi-bold">)</span><span class="ansi-yellow-intense-fg ansi-bold">:</span>
-
-<span class="ansi-green-intense-fg ansi-bold">/usr/lib64/python3.5/socket.py</span> in <span class="ansi-cyan-fg">readinto</span><span class="ansi-blue-intense-fg ansi-bold">(self, b)</span>
-<span class="ansi-green-fg">    574</span>         <span class="ansi-green-intense-fg ansi-bold">while</span> <span class="ansi-green-intense-fg ansi-bold">True</span><span class="ansi-yellow-intense-fg ansi-bold">:</span>
-<span class="ansi-green-fg">    575</span>             <span class="ansi-green-intense-fg ansi-bold">try</span><span class="ansi-yellow-intense-fg ansi-bold">:</span>
-<span class="ansi-green-intense-fg ansi-bold">--&gt; 576</span><span class="ansi-yellow-intense-fg ansi-bold">                 </span><span class="ansi-green-intense-fg ansi-bold">return</span> self<span class="ansi-yellow-intense-fg ansi-bold">.</span>_sock<span class="ansi-yellow-intense-fg ansi-bold">.</span>recv_into<span class="ansi-yellow-intense-fg ansi-bold">(</span>b<span class="ansi-yellow-intense-fg ansi-bold">)</span>
-<span class="ansi-green-fg">    577</span>             <span class="ansi-green-intense-fg ansi-bold">except</span> timeout<span class="ansi-yellow-intense-fg ansi-bold">:</span>
-<span class="ansi-green-fg">    578</span>                 self<span class="ansi-yellow-intense-fg ansi-bold">.</span>_timeout_occurred <span class="ansi-yellow-intense-fg ansi-bold">=</span> <span class="ansi-green-intense-fg ansi-bold">True</span>
-
-<span class="ansi-red-intense-fg ansi-bold">KeyboardInterrupt</span>: </pre>
-</div>
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span> 
-</pre></div>
-
-</div>
 </div>
 </div>
 

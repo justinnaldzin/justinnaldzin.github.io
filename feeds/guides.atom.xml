@@ -65,6 +65,7 @@ Done. Your new project is available at /Users/justin/Desktop/pelican-github-page
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;Title&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="n"&gt;Hello&lt;/span&gt; &lt;span class="n"&gt;World&lt;/span&gt;
 &lt;span class="n"&gt;Date&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;2017&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;
 &lt;span class="n"&gt;Category&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="n"&gt;Guides&lt;/span&gt;
+&lt;span class="n"&gt;Tags&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="n"&gt;about&lt;/span&gt;
 
 &lt;span class="n"&gt;Hello&lt;/span&gt; &lt;span class="n"&gt;World&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
@@ -105,8 +106,37 @@ Done. Your new project is available at /Users/justin/Desktop/pelican-github-page
 
 
 &lt;hr&gt;
+&lt;h2&gt;Add support for Jupyter Notebooks&lt;/h2&gt;
+&lt;p&gt;To have Pelican automatically convert Jupyter Notebooks (files with the extention .ipynb) into posts, we need to install a &lt;a href="https://github.com/danielfrg/pelican-ipynb"&gt;plugin&lt;/a&gt;.  &lt;/p&gt;
+&lt;p&gt;Install the Jupyter plugin as a git submodule&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;git submodule add git://github.com/danielfrg/pelican-ipynb.git pelican-plugins/jupyter
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Modify &lt;code&gt;pelicanconf.py&lt;/code&gt; to activate the plugin&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;PLUGIN_PATH = &amp;#39;./pelican-plugins&amp;#39;
+PLUGINS = [&amp;#39;ipynb.markup&amp;#39;]
+
+# Jupyter
+MARKUP = (&amp;#39;md&amp;#39;, &amp;#39;ipynb&amp;#39;)
+IPYNB_USE_META_SUMMARY = True
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;hr&gt;
+&lt;h2&gt;Convert Jupyter Notebooks into posts&lt;/h2&gt;
+&lt;p&gt;Copy the notebook into the &lt;code&gt;content&lt;/code&gt; folder.&lt;/p&gt;
+&lt;p&gt;Within the &lt;code&gt;content&lt;/code&gt; folder, create a new metadata file with the same name as the &lt;code&gt;.ipynb&lt;/code&gt; file but with the extension &lt;code&gt;.ipynb-meta&lt;/code&gt;.  This file should only include the post's metadata.  For example:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;Title&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="n"&gt;My&lt;/span&gt; &lt;span class="n"&gt;Jupyter&lt;/span&gt; &lt;span class="n"&gt;Notebook&lt;/span&gt;
+&lt;span class="n"&gt;Date&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;2017&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;02&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;14&lt;/span&gt;
+&lt;span class="n"&gt;Category&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="n"&gt;Guides&lt;/span&gt;
+&lt;span class="n"&gt;Tags&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="n"&gt;python&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;hr&gt;
 &lt;h2&gt;Generating the static site files and run a devserver&lt;/h2&gt;
-&lt;p&gt;Create a Markdown file saving with a &lt;code&gt;.md&lt;/code&gt; extension within the &lt;code&gt;content&lt;/code&gt; directory.  For example:&lt;/p&gt;
+&lt;p&gt;Create additional Markdown files saving with a &lt;code&gt;.md&lt;/code&gt; extension within the &lt;code&gt;content&lt;/code&gt; directory.  For example:&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;Title&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="n"&gt;Hello&lt;/span&gt; &lt;span class="n"&gt;World&lt;/span&gt;
 &lt;span class="n"&gt;Date&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;2017&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;
 &lt;span class="n"&gt;Category&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="n"&gt;Guide&lt;/span&gt;
@@ -149,4 +179,4 @@ This file needs to be placed in the Pelican source directory at &lt;code&gt;.git
 make publish
 &lt;span class="nb"&gt;cd&lt;/span&gt; output &lt;span class="o"&gt;&amp;amp;&amp;amp;&lt;/span&gt; git add -A &lt;span class="o"&gt;&amp;amp;&amp;amp;&lt;/span&gt; git commit -m &lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="nv"&gt;$lastcommit&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt; &lt;span class="o"&gt;&amp;amp;&amp;amp;&lt;/span&gt; git push origin master
 &lt;span class="nb"&gt;exit&lt;/span&gt; &lt;span class="m"&gt;0&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;</content></entry></feed>
+&lt;/pre&gt;&lt;/div&gt;</content><category term="pelican"></category><category term="python"></category><category term="github"></category></entry></feed>
