@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en" prefix="og: http://ogp.me/ns# fb: https://www.facebook.com/2008/fbml">
+<head>
+    <title>Apache Spark integration with Jupyter Notebook - Justin Naldzin</title>
+    <!-- Using the latest rendering mode for IE -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+
+<link rel="canonical" href="/apache-spark-integration-with-jupyter-notebook.html">
+
+        <meta name="author" content="Justin Naldzin" />
+        <meta name="keywords" content="apache,spark,pyspark,python,jupyter" />
+        <meta name="description" content="This guide explains how to install PySpark locally and integrate with Jupyter Notebook." />
+
+        <meta property="og:site_name" content="Justin Naldzin" />
+        <meta property="og:type" content="article"/>
+        <meta property="og:title" content="Apache Spark integration with Jupyter Notebook"/>
+        <meta property="og:url" content="/apache-spark-integration-with-jupyter-notebook.html"/>
+        <meta property="og:description" content="This guide explains how to install PySpark locally and integrate with Jupyter Notebook."/>
+        <meta property="article:published_time" content="2017-04-11" />
+            <meta property="article:section" content="guides" />
+            <meta property="article:tag" content="apache" />
+            <meta property="article:tag" content="spark" />
+            <meta property="article:tag" content="pyspark" />
+            <meta property="article:tag" content="python" />
+            <meta property="article:tag" content="jupyter" />
+            <meta property="article:author" content="Justin Naldzin" />
+
+
+    <!-- Bootstrap -->
+        <link rel="stylesheet" href="/theme/css/bootstrap.paper.min.css" type="text/css"/>
+    <link href="/theme/css/font-awesome.min.css" rel="stylesheet">
+
+    <link href="/theme/css/pygments/emacs.css" rel="stylesheet">
+    <link rel="stylesheet" href="/theme/css/style.css" type="text/css"/>
+
+
+
+
+
+</head>
+<body>
+
+<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+	<div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a href="/" class="navbar-brand">
+Justin Naldzin            </a>
+        </div>
+        <div class="collapse navbar-collapse navbar-ex1-collapse">
+            <ul class="nav navbar-nav">
+                        <li >
+                            <a href="/category/about.html">About</a>
+                        </li>
+                        <li class="active">
+                            <a href="/category/guides.html">Guides</a>
+                        </li>
+                        <li >
+                            <a href="/category/internet-of-things.html">Internet of things</a>
+                        </li>
+                        <li >
+                            <a href="/category/notebooks.html">Notebooks</a>
+                        </li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+</div> <!-- /.navbar -->
+<!-- Banner -->
+<!-- End Banner -->
+<div class="container">
+    <div class="row">
+        <div class="col-sm-9">
+    <section id="content">
+        <article>
+            <header class="page-header">
+                <h1>
+                    <a href="/apache-spark-integration-with-jupyter-notebook.html"
+                       rel="bookmark"
+                       title="Permalink to Apache Spark integration with Jupyter Notebook">
+                        Apache Spark integration with Jupyter Notebook
+                    </a>
+                </h1>
+            </header>
+            <div class="entry-content">
+                <div class="panel">
+                    <div class="panel-body">
+<footer class="post-info">
+    <span class="label label-default">Date</span>
+    <span class="published">
+        <i class="fa fa-calendar"></i><time datetime="2017-04-11T00:00:00-04:00"> Tue 11 April 2017</time>
+    </span>
+
+
+
+
+
+<span class="label label-default">Tags</span>
+	<a href="/tag/apache.html">apache</a>
+        /
+	<a href="/tag/spark.html">spark</a>
+        /
+	<a href="/tag/pyspark.html">pyspark</a>
+        /
+	<a href="/tag/python.html">python</a>
+        /
+	<a href="/tag/jupyter.html">jupyter</a>
+    
+</footer><!-- /.post-info -->                    </div>
+                </div>
+                <h2>Table of Contents</h2>
+<p>This guide explains how to install PySpark locally and integrate with Jupyter Notebook.
+Here are the steps to follow:</p>
+<ol>
+<li><a href="#jupyter-notebook-overview">Jupyter Notebook overview</a></li>
+<li><a href="#required-packages">Install the required packages</a></li>
+<li><a href="#apache-spark">Download and build Apache Spark</a></li>
+<li><a href="#environment-variables">Set your environment variables</a></li>
+<li><a href="#install-a-spark-kernel-for-jupyter-notebook">Install a Spark kernel for Jupyter Notebook</a></li>
+</ol>
+<h2>Jupyter Notebook overview</h2>
+<p><a href="http://jupyter.org/">Jupyter Notebook</a> has support for over 40 programming languages, with the most popular being Python, R, Julia and Scala.  The different components of Jupyter include:</p>
+<ul>
+<li>Jupyter Notebook App</li>
+<li>Jupter documents</li>
+<li>kernels</li>
+<li>Notebook Dashboard</li>
+</ul>
+<p>Be sure to check out the <a href="http://jupyter-notebook-beginner-guide.readthedocs.io/en/latest/index.html">Jupyter Notebook beginner guide</a> to learn more, including <a href="https://jupyter.readthedocs.io/en/latest/index.html">how to install Jupyter Notebook</a>.</p>
+<h2>Required packages</h2>
+<p>Integrating PySpark with Jupyter Notebook requires the following packages:</p>
+<ol>
+<li>Java SE Development Kit</li>
+<li>Apache Spark 2.1.0</li>
+<li>Scala Build Tool</li>
+<li>Python 3.5+</li>
+<li>Jupyter Notebook</li>
+</ol>
+<h4>Java</h4>
+<p>Spark requires Java 7+, which you can download from Oracle's website:</p>
+<ul>
+<li><a href="https://www.java.com/en/download/faq/java_mac.xml">macOS download link</a></li>
+<li><a href="http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html">Linux download link</a></li>
+</ul>
+<h4>Apache Spark</h4>
+<p>On the <a href="http://spark.apache.org/downloads.html">Spark downloads page</a>, choose to download the zipped Spark source code (.tgz file).
+Unzip the .tgz file and move the folder to your home directory.
+Create a symbolic link from <code>$HOME/spark</code>.</p>
+<h4>Scala build tool</h4>
+<p>In order to build Spark, you’ll need the Scala build tool, which you can install via:</p>
+<ul>
+<li>macOS: <code>brew install sbt</code></li>
+<li>Linux: <a href="http://www.scala-sbt.org/release/tutorial/Installing-sbt-on-Linux.html">instructions</a></li>
+</ul>
+<p>Navigate to the directory you unzipped Spark to and run <code>sbt assembly</code> to build Spark.</p>
+<p><code>sbt package</code></p>
+<p>Or with maven:</p>
+<div class="highlight"><pre><span></span>export MAVEN_OPTS=&quot;-Xmx2g -XX:ReservedCodeCacheSize=512m&quot;
+./build/mvn -Pyarn -Phadoop-2.4 -Dhadoop.version=2.4.0 -DskipTests clean package
+./build/mvn -Phadoop-2.7,yarn,mesos,hive,hive-thriftserver -DskipTests clean install
+</pre></div>
+
+
+<h4>Environment variables</h4>
+<p>Add the following environment variables to your <code>~/.bash_profile</code>:</p>
+<div class="highlight"><pre><span></span># Spark
+export PYTHONPATH=$PYTHONPATH:$SPARK_HOME/python:$SPARK_HOME/python/lib/py4j-x.zip
+export PYSPARK_SUBMIT_ARGS=&quot;--master local[*]&quot;
+echo &quot;SPARK_HOME=/path_to_downloaded_spark/&quot; &gt;&gt; .bash_profile
+echo &quot;PATH=$PATH:/$SPARK_HOME/bin:/$SPARK_HOME/python:/$SPARK_HOME/python/lib/py4j-x.x.x-blahblah.zip&quot; &gt;&gt; .bash_profile
+</pre></div>
+
+
+<h2>Install a Spark kernel for Jupyter Notebook</h2>
+<p>Currently there are three ways to configure Spark in Jupyter notebooks:</p>
+<ol>
+<li>PySpark with IPythonKernel</li>
+<li><a href="https://toree.apache.org">Apache Toree</a></li>
+<li><a href="https://github.com/jupyter-incubator/sparkmagic">Sparkmagic</a> kernel</li>
+</ol>
+<h3>Using PySpark with IPythonKernel</h3>
+<p>Setting up PySpark in Jupyter is the easiest way to get started with interactive Spark sessions.</p>
+<p>Define a new kernel by creating a JSON file at: <code>/usr/local/share/jupyter/kernels/pyspark/kernel.json</code></p>
+<div class="highlight"><pre><span></span><span class="p">{</span>
+ <span class="nt">&quot;display_name&quot;</span><span class="p">:</span> <span class="s2">&quot;PySpark&quot;</span><span class="p">,</span>
+ <span class="nt">&quot;language&quot;</span><span class="p">:</span> <span class="s2">&quot;python&quot;</span><span class="p">,</span>
+ <span class="nt">&quot;argv&quot;</span><span class="p">:</span> <span class="p">[</span>
+  <span class="s2">&quot;/path/to/bin/python3&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;-m&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;ipykernel&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;-f&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;{connection_file}&quot;</span>
+ <span class="p">],</span>
+ <span class="nt">&quot;env&quot;</span><span class="p">:</span> <span class="p">{</span>
+  <span class="nt">&quot;SPARK_HOME&quot;</span><span class="p">:</span> <span class="s2">&quot;/path/to/spark/&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;PYTHONPATH&quot;</span><span class="p">:</span> <span class="s2">&quot;/path/to/spark/python/:/path/to/spark/python/lib/py4j-0.x.x.x-src.zip&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;PYTHONSTARTUP&quot;</span><span class="p">:</span> <span class="s2">&quot;/path/to/spark/python/pyspark/shell.py&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;PYSPARK_SUBMIT_ARGS&quot;</span><span class="p">:</span> <span class="s2">&quot;--master local[*] --conf spark.executor.cores=1 --conf spark.executor.memory=512m pyspark-shell&quot;</span>
+ <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>By adding these environment variables, calling the <code>pyspark</code> executable directly will launch Jupyter Notebook with PySpark kernel</p>
+<div class="highlight"><pre><span></span><span class="nv">PYSPARK_PYTHON</span><span class="o">=</span>python3
+<span class="nv">PYSPARK_DRIVER_PYTHON</span><span class="o">=</span><span class="s2">&quot;jupyter&quot;</span>
+<span class="nv">PYSPARK_DRIVER_PYTHON_OPTS</span><span class="o">=</span><span class="s2">&quot;notebook&quot;</span>
+</pre></div>
+
+
+<h3>Apache Toree</h3>
+<p>Toree is an Apache Incubating project originally created by developers at IBM.</p>
+<p>Install Jupyter Notebook</p>
+<div class="highlight"><pre><span></span>pip install jupyter
+</pre></div>
+
+
+<p>Install Apache Toree:</p>
+<div class="highlight"><pre><span></span>pip install toree
+</pre></div>
+
+
+<p>Configure Apache Toree installation with Jupyter.  Apache Toree supports multiple IPython kernels, including Python via PySpark. The beauty of Apache Toree is that it greatly simplifies adding new kernels with the –interpreters argument.</p>
+<div class="highlight"><pre><span></span>jupyter toree install --interpreters<span class="o">=</span>PySpark
+</pre></div>
+
+
+<p>Confirm installation by listing the available kernels:</p>
+<div class="highlight"><pre><span></span>jupyter kernelspec list
+</pre></div>
+
+
+<p>Launch Jupyter Notebook:</p>
+<div class="highlight"><pre><span></span>jupyter notebook
+</pre></div>
+
+
+<h3>Sparkmagic</h3>
+<p><a href="https://github.com/jupyter-incubator/sparkmagic">Sparkmagic</a> is a set of tools for interactively working with remote Spark clusters through <a href="http://livy.io">Livy</a>, a Spark REST server, in Jupyter notebooks. The Sparkmagic project includes a set of magics for interactively running Spark code in multiple languages, as well as some kernels that you can use to turn Jupyter into an integrated Spark environment.</p>
+            </div>
+            <!-- /.entry-content -->
+        </article>
+    </section>
+
+        </div>
+        <div class="col-sm-3" id="sidebar">
+            <aside>
+
+<section class="well well-sm">
+    <ul class="list-group list-group-flush">
+        <li class="list-group-item"><h4><i class="fa fa-home fa-lg"></i><span class="icon-label">Social</span></h4>
+              <ul class="list-group" id="social">
+                <li class="list-group-item"><a href="https://www.linkedin.com/in/justinnaldzin"><i class="fa fa-linkedin-square fa-lg"></i> LinkedIn</a></li>
+                <li class="list-group-item"><a href="https://www.github.com/justinnaldzin"><i class="fa fa-github-square fa-lg"></i> GitHub</a></li>
+                <li class="list-group-item"><a href="https://www.youtube.com/justinnaldzin"><i class="fa fa-youtube-square fa-lg"></i> YouTube</a></li>
+                <li class="list-group-item"><a href="https://www.facebook.com/justinnaldzin"><i class="fa fa-facebook-square fa-lg"></i> Facebook</a></li>
+                <li class="list-group-item"><a href="https://www.twitter.com/justinnaldzin"><i class="fa fa-twitter-square fa-lg"></i> Twitter</a></li>
+              </ul>
+            </li>
+
+
+
+
+
+
+    <li class="list-group-item"><h4><i class="fa fa-github fa-lg"></i><span class="icon-label">GitHub Repos</span></h4>
+        <div id="gh_repos">
+            <p class="list-group-item">Status updating...</p>
+        </div>
+    </li>
+    </ul>
+</section>            </aside>
+        </div>
+    </div>
+</div>
+<footer>
+   <div class="container">
+      <hr>
+      <div class="row">
+         <div class="col-xs-10">&copy; 2017 Justin Naldzin
+            &middot; Powered by <a href="https://github.com/getpelican/pelican-themes/tree/master/pelican-bootstrap3" target="_blank">pelican-bootstrap3</a>,
+            <a href="http://docs.getpelican.com/" target="_blank">Pelican</a>,
+            <a href="http://getbootstrap.com" target="_blank">Bootstrap</a>         </div>
+         <div class="col-xs-2"><p class="pull-right"><i class="fa fa-arrow-up"></i> <a href="#">Back to top</a></p></div>
+      </div>
+   </div>
+</footer>
+<script src="/theme/js/jquery.min.js"></script>
+
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="/theme/js/bootstrap.min.js"></script>
+
+<!-- Enable responsive features in IE8 with Respond.js (https://github.com/scottjehl/Respond) -->
+<script src="/theme/js/respond.min.js"></script>
+
+    <!-- GitHub JS -->
+    <script type="text/javascript">
+        $(document).ready(function () {
+            if (!window.jXHR) {
+                var jxhr = document.createElement('script');
+                jxhr.type = 'text/javascript';
+                jxhr.src = '/theme/js/jXHR.js';
+                var s = document.getElementsByTagName('script')[0];
+                s.parentNode.insertBefore(jxhr, s);
+            }
+
+            github.showRepos({
+                user: 'justinnaldzin',
+                count: 5,
+                skip_forks: false,
+                target: '#gh_repos'
+            });
+        });
+    </script>
+    <script src="/theme/js/github.js" type="text/javascript"></script>
+    <!-- End GitHub JS Code -->
+
+</body>
+</html>
