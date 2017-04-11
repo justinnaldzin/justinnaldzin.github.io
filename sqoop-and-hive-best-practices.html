@@ -206,7 +206,7 @@ hadoop fs -chmod -R <span class="m">777</span> /data/<span class="nv">$SCHEMA</s
 
 
 <h4>Production</h4>
-<p>Run the Hive DDL</p>
+<p>Run the Hive DDL for <strong>non-partitioned</strong> table</p>
 <div class="highlight"><pre><span></span>hive -e <span class="s2">&quot;CREATE EXTERNAL TABLE </span><span class="nv">$DATABASE</span><span class="s2">.</span><span class="nv">$TABLE</span><span class="s2">(</span>
 <span class="s2">    &lt;COLUMN_1&gt; &lt;DATATYPE&gt;,</span>
 <span class="s2">    ...</span>
@@ -217,12 +217,32 @@ hadoop fs -chmod -R <span class="m">777</span> /data/<span class="nv">$SCHEMA</s
 </pre></div>
 
 
-<p>Copy data from Staging to Production</p>
-<div class="highlight"><pre><span></span>hive -e <span class="s2">&quot;SET hive.exec.dynamic.partition=true;&quot;</span>
-hive -e <span class="s2">&quot;USE </span><span class="nv">$DATABASE</span><span class="s2">;&quot;</span>
+<p>Run the Hive DDL for <strong>partitioned</strong> table</p>
+<div class="highlight"><pre><span></span>hive -e <span class="s2">&quot;CREATE EXTERNAL TABLE </span><span class="nv">$DATABASE</span><span class="s2">.</span><span class="nv">$TABLE</span><span class="s2">(</span>
+<span class="s2">    &lt;COLUMN_1&gt; &lt;DATATYPE&gt;,</span>
+<span class="s2">    ...</span>
+<span class="s2">    &lt;COLUMN_n&gt; &lt;DATATYPE&gt;</span>
+<span class="s2">)</span>
+<span class="s2">PARTITIONED BY (dt date)</span>
+<span class="s2">STORED AS ORC</span>
+<span class="s2">LOCATION &#39;/data/</span><span class="si">${</span><span class="nv">SCHEMA</span><span class="p">,,</span><span class="si">}</span><span class="s2">/production/</span><span class="si">${</span><span class="nv">TABLE</span><span class="p">,,</span><span class="si">}</span><span class="s2">&#39;;&quot;</span>
+</pre></div>
+
+
+<p>Copy data from Staging to Production for <strong>non-partitioned</strong> table</p>
+<div class="highlight"><pre><span></span>hive -e <span class="s2">&quot;USE </span><span class="nv">$DATABASE</span><span class="s2">;&quot;</span>
 hive -e <span class="s2">&quot;INSERT INTO TABLE </span><span class="nv">$DATABASE</span><span class="s2">.</span><span class="nv">$TABLE</span><span class="s2"></span>
 <span class="s2">         SELECT * FROM </span><span class="nv">$DATABASE</span><span class="s2">.</span><span class="nv">$STAGE_TABLE</span><span class="s2">;&quot;</span>
 hive -e <span class="s2">&quot;ANALYZE TABLE </span><span class="nv">$DATABASE</span><span class="s2">.</span><span class="nv">$TABLE</span><span class="s2"> COMPUTE STATISTICS FOR COLUMNS;&quot;</span>
+</pre></div>
+
+
+<p>Copy data from Staging to Production for <strong>partitioned</strong> table</p>
+<div class="highlight"><pre><span></span>hive -e <span class="s2">&quot;SET hive.exec.dynamic.partition=true;&quot;</span>
+hive -e <span class="s2">&quot;USE </span><span class="nv">$DATABASE</span><span class="s2">;&quot;</span>
+hive -e <span class="s2">&quot;INSERT INTO TABLE </span><span class="nv">$DATABASE</span><span class="s2">.</span><span class="nv">$TABLE</span><span class="s2"> PARTITION(dt)</span>
+<span class="s2">         SELECT *, CAST(&lt;COLUMN&gt; AS DATE) AS dt FROM </span><span class="nv">$DATABASE</span><span class="s2">.</span><span class="nv">$STAGE_TABLE</span><span class="s2">;&quot;</span>
+hive -e <span class="s2">&quot;ANALYZE TABLE </span><span class="nv">$DATABASE</span><span class="s2">.</span><span class="nv">$TABLE</span><span class="s2"> PARTITION(dt) COMPUTE STATISTICS FOR COLUMNS;&quot;</span>
 </pre></div>
 
 
