@@ -125,8 +125,13 @@ Here are the steps to follow:</p>
 <ol>
 <li><a href="#jupyter-notebook-overview">Jupyter Notebook overview</a></li>
 <li><a href="#required-packages">Install the required packages</a></li>
-<li><a href="#apache-spark">Download and build Apache Spark</a></li>
-<li><a href="#environment-variables">Set your environment variables</a></li>
+<li><a href="#python">Python 3.5+</a></li>
+<li><a href="#java">Java SE Development Kit</a></li>
+<li><a href="#apache-spark">Apache Spark 2.1.0</a></li>
+<li><a href="#scala-build-tool">Scala Build Tool</a></li>
+<li><a href="#build-apache-spark">Build Apache Spark</a></li>
+<li><a href="#environment-variables">Set environment variables</a></li>
+<li><a href="#jupyter-notebook">Install Jupyter Notebook</a></li>
 <li><a href="#install-a-spark-kernel-for-jupyter-notebook">Install a Spark kernel for Jupyter Notebook</a></li>
 </ol>
 <h2>Jupyter Notebook overview</h2>
@@ -141,14 +146,17 @@ Here are the steps to follow:</p>
 <h2>Required packages</h2>
 <p>Integrating PySpark with Jupyter Notebook requires the following packages:</p>
 <ol>
+<li>Python 3.5+</li>
 <li>Java SE Development Kit</li>
 <li>Apache Spark 2.1.0</li>
 <li>Scala Build Tool</li>
-<li>Python 3.5+</li>
 <li>Jupyter Notebook</li>
 </ol>
+<h4>Python</h4>
+<p>Download and Install Python 3
+ - <a href="https://www.python.org/downloads/">download link</a></p>
 <h4>Java</h4>
-<p>Spark requires Java 7+, which you can download from Oracle's website:</p>
+<p>Java 7+ is required which you can download from Oracle's website</p>
 <ul>
 <li><a href="https://www.java.com/en/download/faq/java_mac.xml">macOS download link</a></li>
 <li><a href="http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html">Linux download link</a></li>
@@ -158,22 +166,23 @@ Here are the steps to follow:</p>
 Unzip the .tgz file and move the folder to your home directory.
 Create a symbolic link from <code>$HOME/spark</code>.</p>
 <h4>Scala build tool</h4>
-<p>In order to build Spark, you’ll need the Scala build tool, which you can install via:</p>
+<p>In order to build Spark, you will need the Scala build tool, which you can install via:</p>
 <ul>
 <li>macOS: <code>brew install sbt</code></li>
 <li>Linux: <a href="http://www.scala-sbt.org/release/tutorial/Installing-sbt-on-Linux.html">instructions</a></li>
 </ul>
-<p>Navigate to the directory you unzipped Spark to and run <code>sbt assembly</code> to build Spark.</p>
+<h2>Build Apache Spark</h2>
+<p>Navigate to the directory where you unzipped Spark and run <code>sbt assembly</code> to build Spark.</p>
 <p><code>sbt package</code></p>
-<p>Or with maven:</p>
+<p>Or with maven</p>
 <div class="highlight"><pre><span></span>export MAVEN_OPTS=&quot;-Xmx2g -XX:ReservedCodeCacheSize=512m&quot;
 ./build/mvn -Pyarn -Phadoop-2.4 -Dhadoop.version=2.4.0 -DskipTests clean package
 ./build/mvn -Phadoop-2.7,yarn,mesos,hive,hive-thriftserver -DskipTests clean install
 </pre></div>
 
 
-<h4>Environment variables</h4>
-<p>Add the following environment variables to your <code>~/.bash_profile</code>:</p>
+<h2>Environment variables</h2>
+<p>Add the following environment variables to your <code>~/.bash_profile</code></p>
 <div class="highlight"><pre><span></span># Spark
 export PYTHONPATH=$PYTHONPATH:$SPARK_HOME/python:$SPARK_HOME/python/lib/py4j-x.zip
 export PYSPARK_SUBMIT_ARGS=&quot;--master local[*]&quot;
@@ -182,8 +191,14 @@ echo &quot;PATH=$PATH:/$SPARK_HOME/bin:/$SPARK_HOME/python:/$SPARK_HOME/python/l
 </pre></div>
 
 
+<h2>Install Jupyter Notebook</h2>
+<p>Install with <code>pip</code></p>
+<div class="highlight"><pre><span></span>pip install jupyter
+</pre></div>
+
+
 <h2>Install a Spark kernel for Jupyter Notebook</h2>
-<p>Currently there are three ways to configure Spark in Jupyter notebooks:</p>
+<p>Currently there are three ways to configure Spark in Jupyter notebooks</p>
 <ol>
 <li>PySpark with IPythonKernel</li>
 <li><a href="https://toree.apache.org">Apache Toree</a></li>
@@ -221,12 +236,7 @@ echo &quot;PATH=$PATH:/$SPARK_HOME/bin:/$SPARK_HOME/python:/$SPARK_HOME/python/l
 
 <h3>Apache Toree</h3>
 <p>Toree is an Apache Incubating project originally created by developers at IBM.</p>
-<p>Install Jupyter Notebook</p>
-<div class="highlight"><pre><span></span>pip install jupyter
-</pre></div>
-
-
-<p>Install Apache Toree:</p>
+<p>Install Apache Toree</p>
 <div class="highlight"><pre><span></span>pip install toree
 </pre></div>
 
@@ -236,12 +246,12 @@ echo &quot;PATH=$PATH:/$SPARK_HOME/bin:/$SPARK_HOME/python:/$SPARK_HOME/python/l
 </pre></div>
 
 
-<p>Confirm installation by listing the available kernels:</p>
+<p>Confirm installation by listing the available kernels</p>
 <div class="highlight"><pre><span></span>jupyter kernelspec list
 </pre></div>
 
 
-<p>Launch Jupyter Notebook:</p>
+<p>Launch Jupyter Notebook</p>
 <div class="highlight"><pre><span></span>jupyter notebook
 </pre></div>
 

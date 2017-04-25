@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en" prefix="og: http://ogp.me/ns# fb: https://www.facebook.com/2008/fbml">
+<head>
+    <title>Big Data Benchmarking - Justin Naldzin</title>
+    <!-- Using the latest rendering mode for IE -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+
+<link rel="canonical" href="/big-data-benchmarking.html">
+
+        <meta name="author" content="Justin Naldzin" />
+        <meta name="keywords" content="big data,benchmarking,vagrant,spark,python,jupyter,bokeh,oracle,sql server,hana" />
+        <meta name="description" content="This is a portable, reproducible, and completely automated application designed to benchmark various database platforms and big data technologies with a goal of comparing how each performs when working with large datasets. By ensuring the same dataset is inserted into each database platform and executing syntactically equivalent queries, we can achieve an accurate comparison and understand where one outperforms the other. An interactive HTTP dashboard containing various charting and graphing elements are used to display the benchmarking results for visual analysis." />
+
+        <meta property="og:site_name" content="Justin Naldzin" />
+        <meta property="og:type" content="article"/>
+        <meta property="og:title" content="Big Data Benchmarking"/>
+        <meta property="og:url" content="/big-data-benchmarking.html"/>
+        <meta property="og:description" content="This is a portable, reproducible, and completely automated application designed to benchmark various database platforms and big data technologies with a goal of comparing how each performs when working with large datasets. By ensuring the same dataset is inserted into each database platform and executing syntactically equivalent queries, we can achieve an accurate comparison and understand where one outperforms the other. An interactive HTTP dashboard containing various charting and graphing elements are used to display the benchmarking results for visual analysis."/>
+        <meta property="article:published_time" content="2017-05-01" />
+            <meta property="article:section" content="guides" />
+            <meta property="article:tag" content="big data" />
+            <meta property="article:tag" content="benchmarking" />
+            <meta property="article:tag" content="vagrant" />
+            <meta property="article:tag" content="spark" />
+            <meta property="article:tag" content="python" />
+            <meta property="article:tag" content="jupyter" />
+            <meta property="article:tag" content="bokeh" />
+            <meta property="article:tag" content="oracle" />
+            <meta property="article:tag" content="sql server" />
+            <meta property="article:tag" content="hana" />
+            <meta property="article:author" content="Justin Naldzin" />
+
+
+    <!-- Bootstrap -->
+        <link rel="stylesheet" href="/theme/css/bootstrap.paper.min.css" type="text/css"/>
+    <link href="/theme/css/font-awesome.min.css" rel="stylesheet">
+
+    <link href="/theme/css/pygments/emacs.css" rel="stylesheet">
+    <link rel="stylesheet" href="/theme/css/style.css" type="text/css"/>
+
+
+
+
+
+</head>
+<body>
+
+<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+	<div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a href="/" class="navbar-brand">
+Justin Naldzin            </a>
+        </div>
+        <div class="collapse navbar-collapse navbar-ex1-collapse">
+            <ul class="nav navbar-nav">
+                        <li >
+                            <a href="/category/about.html">About</a>
+                        </li>
+                        <li class="active">
+                            <a href="/category/guides.html">Guides</a>
+                        </li>
+                        <li >
+                            <a href="/category/internet-of-things.html">Internet of things</a>
+                        </li>
+                        <li >
+                            <a href="/category/notebooks.html">Notebooks</a>
+                        </li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+</div> <!-- /.navbar -->
+<!-- Banner -->
+<!-- End Banner -->
+<div class="container">
+    <div class="row">
+        <div class="col-sm-9">
+    <section id="content">
+        <article>
+            <header class="page-header">
+                <h1>
+                    <a href="/big-data-benchmarking.html"
+                       rel="bookmark"
+                       title="Permalink to Big Data Benchmarking">
+                        Big Data Benchmarking
+                    </a>
+                </h1>
+            </header>
+            <div class="entry-content">
+                <div class="panel">
+                    <div class="panel-body">
+<footer class="post-info">
+    <span class="label label-default">Date</span>
+    <span class="published">
+        <i class="fa fa-calendar"></i><time datetime="2017-05-01T00:00:00-04:00"> Mon 01 May 2017</time>
+    </span>
+
+
+
+
+
+<span class="label label-default">Tags</span>
+	<a href="/tag/big-data.html">big data</a>
+        /
+	<a href="/tag/benchmarking.html">benchmarking</a>
+        /
+	<a href="/tag/vagrant.html">vagrant</a>
+        /
+	<a href="/tag/spark.html">spark</a>
+        /
+	<a href="/tag/python.html">python</a>
+        /
+	<a href="/tag/jupyter.html">jupyter</a>
+        /
+	<a href="/tag/bokeh.html">bokeh</a>
+        /
+	<a href="/tag/oracle.html">oracle</a>
+        /
+	<a href="/tag/sql-server.html">sql server</a>
+        /
+	<a href="/tag/hana.html">hana</a>
+    
+</footer><!-- /.post-info -->                    </div>
+                </div>
+                <h2>Overview</h2>
+<p>This is a portable, reproducible, and completely automated application designed to benchmark various database platforms and big data technologies with a goal of comparing how each performs when working with large datasets.  By ensuring the same dataset is inserted into each database platform and executing syntactically equivalent queries, we can achieve an accurate comparison and understand where one outperforms the other.  An interactive HTTP dashboard containing various charting and graphing elements are used to display the benchmarking results for visual analysis.</p>
+<p align="center">
+<img src="images/benchmarking.jpg" alt="Benchmarking">
+<img src="images/big-data.jpg" alt="Big Data">
+</p>
+
+<h2>Audience</h2>
+<p>When it comes to Big Data and the platforms that house the data, the most common question being asked is:</p>
+<blockquote>
+<p>"Which big data platform performs best?"</p>
+</blockquote>
+<p>The answer really depends on a few key factors:
+- Raw data size (small data vs. big data)
+- Query complexity (joins, unions, aggregate and analytical queries)
+- Number of concurrent users
+- Memory, CPU, and network configurations</p>
+<p>And since each environment is different, the more appropriate question to ask is:</p>
+<blockquote>
+<p>"Which performs best under each scenario?"</p>
+</blockquote>
+<p><strong>If your organization is running multiple Big Data platforms, this benchmarking application is designed to compare them side by side.</strong></p>
+<p><img alt="dashboard1" src="images/dashboard1.jpg" title="Dashboard Example"></p>
+<h2>Features</h2>
+<ul>
+<li>Supports the following big data technologies:</li>
+<li>Oracle Database</li>
+<li>Oracle Database In-Memory</li>
+<li>Microsoft SQL Server</li>
+<li>SAP HANA</li>
+<li>coming soon:</li>
+<li>Apache Hive</li>
+<li>Apache Spark SQL</li>
+<li>SQLite (use pysqlite)</li>
+<li>MySQL (use mysqldb or mysql.connector or pymysql)</li>
+<li>MariaDB (use mysqldb or mysql.connector or pymysql)</li>
+<li>PostgreSQL (use psycopg2)</li>
+<li>Microsoft Azure</li>
+<li>Compatible on Linux, macOS, and Windows in a reproducible, portable development environment</li>
+<li>Able to accept multiple source datasets in CSV file format (containing headers)</li>
+<li>Create tables and insert into database the datasets specified</li>
+<li>Run benchmarks on these new datasets or on existing tables in the database</li>
+<li>Able to specify the name of the tables to benchmark</li>
+<li>Able to specify the number of benchmarking iterations to perform</li>
+<li>Able to specify the number of concurrent users to simultaneously perform the same benchmarking queries</li>
+<li>Predefined query templates used to formulate a dynamically generated query which is transferrable between each database technology using a syntactically equivalent query</li>
+<li>Limit query results to a specified row count</li>
+<li>Drop tables (only on the newly created tables) immediately after the benchmark</li>
+<li>Output benchmarking results to CSV</li>
+<li>Plot the results in an interactive HTML dashboard containing data tables, charts and graphs using a <a href="http://bokeh.pydata.org/">Bokeh</a> server web app</li>
+</ul>
+<h2>Requirements</h2>
+<ul>
+<li><a href="https://www.vagrantup.com/">Vagrant</a> - A tool for building complete development environments</li>
+<li><a href="https://www.virtualbox.org/">VirtualBox</a> - A cross-platform virtualization application</li>
+<li>Read/Write permissions to one or more of the following database technologies:</li>
+<li>Oracle Database</li>
+<li>Oracle Database In-Memory</li>
+<li>Microsoft SQL Server</li>
+<li>SAP HANA</li>
+<li>more coming soon...</li>
+<li>One or more CSV datasets (containing headers).  Recommended sites to find open datasets:</li>
+<li><a href="https://www.data.gov">data.gov</a> - The home of the U.S. Government's open data</li>
+<li><a href="https://www.reddit.com/r/datasets/">/r/datasets</a> - subreddit with hundreds of interesting datasets</li>
+<li><a href="https://github.com/caesar0301/awesome-public-datasets">Awesome Public Datasets</a> - list of datasets, hosted on GitHub.</li>
+<li><a href="https://www.kaggle.com/datasets">Kaggle</a> - Kaggle datasets</li>
+</ul>
+<h2>Installation</h2>
+<p>Download and install the latest versions of:
+- <a href="https://www.vagrantup.com/docs/installation/">Vagrant</a>
+- <a href="https://www.virtualbox.org/">VirtualBox</a></p>
+<p>Install the Vagrant plugin which automatically installs the host's VirtualBox Guest Additions on the guest system</p>
+<div class="highlight"><pre><span></span>vagrant plugin install vagrant-vbguest
+</pre></div>
+
+
+<p>Clone the repo and navigate into the project directory</p>
+<div class="highlight"><pre><span></span>git clone https://github.com/justinnaldzin/big-data-benchmarking.git
+<span class="nb">cd</span> big-data-benchmarking
+</pre></div>
+
+
+<p>The folder structure looks like the following:</p>
+<div class="highlight"><pre><span></span>$ tree -L <span class="m">1</span>
+.
+├── LICENSE.md
+├── README.md
+├── app
+├── benchmark.py
+├── big_data_benchmarking.py
+├── config.json.example
+├── create_tables.py
+├── csv
+├── data
+├── drop_tables.py
+├── log
+├── queries
+└── vagrant
+
+<span class="m">6</span> directories, <span class="m">7</span> files
+</pre></div>
+
+
+<p>Move all source CSV datasets into the <code>big-data-benchmarking/data/</code> path</p>
+<div class="highlight"><pre><span></span>mv /path/to/datasets/*.csv data/
+</pre></div>
+
+
+<p>Using the example configuration file, create a JSON file named <code>config.json</code> and add database credentials to the <code>connection_string</code> parameter</p>
+<div class="highlight"><pre><span></span>cp config.json.example config.json
+vi config.json
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;Oracle Database&quot;</span><span class="p">:{</span>
+        <span class="nt">&quot;connection_string&quot;</span><span class="p">:</span><span class="s2">&quot;oracle+cx_oracle://user:password@host&quot;</span>
+        <span class="err">...</span>
+    <span class="p">},</span>
+    <span class="nt">&quot;Oracle Database In-Memory&quot;</span><span class="p">:{</span>
+        <span class="nt">&quot;connection_string&quot;</span><span class="p">:</span><span class="s2">&quot;oracle+cx_oracle://user:password@host&quot;</span>
+        <span class="err">...</span>
+    <span class="p">},</span>
+    <span class="nt">&quot;SQL Server&quot;</span><span class="p">:{</span>
+        <span class="nt">&quot;connection_string&quot;</span><span class="p">:</span><span class="s2">&quot;mssql+pymssql://user:password@host&quot;</span>
+        <span class="err">...</span>
+    <span class="p">},</span>
+    <span class="nt">&quot;HANA&quot;</span><span class="p">:{</span>
+        <span class="nt">&quot;connection_string&quot;</span><span class="p">:</span><span class="s2">&quot;hana://user:password@host:30015&quot;</span>
+        <span class="err">...</span>
+    <span class="p">},</span>
+    <span class="nt">&quot;Hive&quot;</span><span class="p">:{</span>
+        <span class="nt">&quot;connection_string&quot;</span><span class="p">:</span><span class="s2">&quot;hive://user:password@host:10000/database&quot;</span>
+        <span class="err">...</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>Build the environment in a virtual machine</p>
+<div class="highlight"><pre><span></span><span class="nb">cd</span> vagrant
+vagrant up
+</pre></div>
+
+
+<p>After provisioning, SSH into the VM</p>
+<div class="highlight"><pre><span></span>vagrant ssh
+</pre></div>
+
+
+<p>Navigate to the project directory on the VM</p>
+<div class="highlight"><pre><span></span><span class="nb">cd</span> /big-data-benchmarking
+</pre></div>
+
+
+<p>Print the command line help menu to view all the options for running the application</p>
+<div class="highlight"><pre><span></span>$ ./big_data_benchmarking.py --help
+usage: big_data_benchmarking.py <span class="o">[</span>-h<span class="o">]</span> <span class="o">[</span>-t TABLE_LIKE<span class="o">]</span> <span class="o">[</span>-r ROWS<span class="o">]</span> <span class="o">[</span>-i ITERATIONS<span class="o">]</span>
+                                <span class="o">[</span>-u CONCURRENT_USERS<span class="o">]</span> <span class="o">[</span>-p DATA_PATH<span class="o">]</span> <span class="o">[</span>-c<span class="o">]</span> <span class="o">[</span>-d<span class="o">]</span>
+                                <span class="o">[</span>database_list <span class="o">[</span>database_list ...<span class="o">]]</span>
+
+Big Data Benchmarking
+
+positional arguments:
+  database_list         Specify the list of Databases to benchmark. These
+                        names must match the names pre-configured in the
+                        <span class="s1">&#39;config.json&#39;</span> file.
+
+optional arguments:
+  -h, --help            show this <span class="nb">help</span> message and <span class="nb">exit</span>
+  -t TABLE_LIKE, --table-like TABLE_LIKE
+                        Specify the name of the tables to benchmark. This uses
+                        the SQL <span class="s1">&#39;LIKE&#39;</span> operator to search a specified pattern
+                        so use the <span class="s1">&#39;%&#39;</span> sign to define wildcards. Default is
+                        <span class="s1">&#39;%&#39;</span> which will find all existing tables in the
+                        database.
+  -r ROWS, --rows ROWS  The maximum number of rows to <span class="k">return</span> from each query
+                        execution. Default is <span class="m">10000</span>
+  -i ITERATIONS, --iterations ITERATIONS
+                        The number of benchmark iterations to perform on the
+                        database. Default is <span class="m">1</span>
+  -u CONCURRENT_USERS, --users CONCURRENT_USERS
+                        The number of concurrent users to connect to the
+                        database. Default is <span class="m">1</span>
+  -p DATA_PATH, --path DATA_PATH
+                        Full directory path to where the data files are
+                        stored. These will be used to create the tables and
+                        insert into database. Default path is: /data
+  -c, --create-tables   Create tables and insert into database the data files
+                        that exist within in the folder <span class="s1">&#39;--path&#39;</span> argument. Not
+                        specifying this option will run benchmarks on all
+                        existing tables in the database.
+  -d, --drop-tables     The <span class="s1">&#39;--create-tables&#39;</span> argument must be specified. Only
+                        those tables created will be dropped.
+</pre></div>
+
+
+<h2>Benchmarking</h2>
+<div class="alert alert-info">
+  <strong>Note!</strong> If you simply want to view the interactive dashboard using sample benchmarking results, skip this section and jump down to the [Benchmarking Results](#benchmarking-results) section.
+</div>
+
+<p>The <code>big-data-benchmarking.py</code> Python script is the main entrypoint to the application.  Here are some example benchmarking scenarios, and how to execute the script:</p>
+<ul>
+<li>Run against <strong>Oracle Database</strong> and <strong>SQL Server</strong> with default options</li>
+</ul>
+<div class="highlight"><pre><span></span>./big-data-benchmarking.py <span class="s2">&quot;Oracle Database&quot;</span> <span class="s2">&quot;SQL Server&quot;</span>
+</pre></div>
+
+
+<ul>
+<li>Run on <strong>Oracle Database In-Memory</strong> against all tables whose name starts with "DEV"</li>
+</ul>
+<div class="highlight"><pre><span></span>./big-data-benchmarking.py <span class="s2">&quot;Oracle Database In-Memory&quot;</span> -t <span class="s2">&quot;DEV%&quot;</span>
+</pre></div>
+
+
+<ul>
+<li>Run against <strong>HANA</strong> limiting the number of rows to return from each query to <strong>5000</strong></li>
+</ul>
+<div class="highlight"><pre><span></span>./big-data-benchmarking.py <span class="s2">&quot;HANA&quot;</span> -r <span class="m">5000</span>
+</pre></div>
+
+
+<ul>
+<li>Run with <strong>50</strong> concurrent users</li>
+</ul>
+<div class="highlight"><pre><span></span>./big-data-benchmarking.py <span class="s2">&quot;Oracle Database&quot;</span> -u <span class="m">50</span>
+</pre></div>
+
+
+<ul>
+<li>Run <strong>10</strong> iterations</li>
+</ul>
+<div class="highlight"><pre><span></span>./big-data-benchmarking.py <span class="s2">&quot;Oracle Database&quot;</span> -i <span class="m">10</span>
+</pre></div>
+
+
+<ul>
+<li>Create tables on the database using all CSV datasets in the default <code>/big-data-benchmarking/data/</code> path</li>
+</ul>
+<div class="highlight"><pre><span></span>./big-data-benchmarking.py <span class="s2">&quot;Oracle Database&quot;</span> -c
+</pre></div>
+
+
+<ul>
+<li>Create tables specifying a different directory than the default path where the CSV datasets reside</li>
+</ul>
+<div class="highlight"><pre><span></span>./big-data-benchmarking.py <span class="s2">&quot;Oracle Database&quot;</span> -c -p /some/other/path/
+</pre></div>
+
+
+<ul>
+<li>Create tables and drop only those tables after the benchmark completes</li>
+</ul>
+<div class="highlight"><pre><span></span>./big-data-benchmarking.py <span class="s2">&quot;Oracle Database&quot;</span> -c -d
+</pre></div>
+
+
+<h2>Benchmarking Results</h2>
+<p>The <code>/big-data-benchmarking/csv/</code> is the location where the actual benchmarking results are written to.  Within this folder you will also find an example benchmarking results CSV file.  This example allows full functionality of the Bokeh server web application even without running any benchmarks.</p>
+<p>Here is a sample of what the CSV data looks like:</p>
+<table>
+<thead>
+<tr>
+<th>category</th>
+<th>concurrency_factor</th>
+<th>database</th>
+<th>name</th>
+<th>query_executed</th>
+<th>query_id</th>
+<th>query_template</th>
+<th>rows</th>
+<th>table_name</th>
+<th>table_row_count</th>
+<th>table_size_category</th>
+<th>time</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Aggregate</td>
+<td>1</td>
+<td>Oracle Database</td>
+<td>COUNT *</td>
+<td>SELECT COUNT(*) FROM "On_Time_Performance_ALL"</td>
+<td>1</td>
+<td table>SELECT COUNT(*) FROM </td>
+<td>1</td>
+<td>On_Time_Performance_ALL</td>
+<td>160690563</td>
+<td>X-Large</td>
+<td>149.38998920100005</td>
+</tr>
+<tr>
+<td>Aggregate</td>
+<td>1</td>
+<td>Oracle Database</td>
+<td>COUNT</td>
+<td>SELECT COUNT("LATE_AIRCRAFT_DELAY") FROM "On_Time_Performance_ALL"</td>
+<td>2</td>
+<td numeric_column>SELECT COUNT(</td>
+<td>1</td>
+<td>On_Time_Performance_ALL</td>
+<td>160690563</td>
+<td>X-Large</td>
+<td>144.099790143</td>
+</tr>
+<tr>
+<td>Aggregate</td>
+<td>1</td>
+<td>Oracle Database</td>
+<td>COUNT DISTINCT</td>
+<td>SELECT COUNT(DISTINCT "DEST_CITY_MARKET_ID") FROM "On_Time_Performance_ALL"</td>
+<td>3</td>
+<td numeric_column>SELECT COUNT(DISTINCT </td>
+<td>1</td>
+<td>On_Time_Performance_ALL</td>
+<td>160690563</td>
+<td>X-Large</td>
+<td>156.50899973100002</td>
+</tr>
+<tr>
+<td>Aggregate</td>
+<td>1</td>
+<td>Oracle Database</td>
+<td>SUM</td>
+<td>SELECT SUM("WHEELS_OFF") FROM "On_Time_Performance_ALL"</td>
+<td>4</td>
+<td numeric_column>SELECT SUM(</td>
+<td>1</td>
+<td>On_Time_Performance_ALL</td>
+<td>160690563</td>
+<td>X-Large</td>
+<td>156.93902191200004</td>
+</tr>
+<tr>
+<td>Aggregate</td>
+<td>1</td>
+<td>Oracle Database</td>
+<td>SUM DISTINCT</td>
+<td>SELECT SUM(DISTINCT "LATE_AIRCRAFT_DELAY") FROM "On_Time_Performance_ALL"</td>
+<td>5</td>
+<td numeric_column>SELECT SUM(DISTINCT </td>
+<td>1</td>
+<td>On_Time_Performance_ALL</td>
+<td>160690563</td>
+<td>X-Large</td>
+<td>149.11920515500003</td>
+</tr>
+</tbody>
+</table>
+<h2>Bokeh Server Web App</h2>
+<p><a href="http://bokeh.pydata.org/">Bokeh</a> is a Python interactive visualization library that targets modern web browsers for presentation.  The Bokeh server web app uses the data from the CSV and generates an interactive HTML dashboard consisting of data tables, charts and graphs.  This allows us to visually analyze the benchmarking results and compare each database platform.</p>
+<p>Instruct Bokeh server to launch the web app</p>
+<div class="highlight"><pre><span></span>bokeh serve app
+</pre></div>
+
+
+<p>Then open your browser and navigate to the dashboard:  http://localhost:5006</p>
+<p><img alt="dashboard2" src="images/dashboard2.jpg" title="Dashboard Example"></p>
+<h2>Conclusion</h2>
+<p>Finally, when you are finished running the benchmarks and no longer need to view the dashboard results, terminate the VM</p>
+<div class="highlight"><pre><span></span>vagrant destroy
+</pre></div>
+
+
+<div class="alert alert-info">
+  <strong>Note!</strong> The `big-data-benchmarking` project folder remains on your local system, along with the CSV benchmarking results.  You will no longer be able to run the benchmarks or view the dashboard once the VM is terminated.  You can easily reprovision the VM and start over
+</div>
+
+<div class="highlight"><pre><span></span>vagrant up
+</pre></div>
+
+
+<h2>Feature Requests</h2>
+<ul>
+<li>Option to specify the <em>minimum</em> amount of rows to return from each query.  Currently you are only permitted to limit the <em>maximum</em> amount of rows</li>
+<li>Benchmark different python drivers against the same database type (MySQL example: <code>mysqldb</code> vs <code>mysql.connector</code> vs <code>pymysql</code>)</li>
+<li>Embed Bokeh into Flask app with Jinja templates</li>
+</ul>
+<h2>Author</h2>
+<p>Justin Naldzin - <a href="https://github.com/justinnaldzin">GitHub</a></p>
+            </div>
+            <!-- /.entry-content -->
+        </article>
+    </section>
+
+        </div>
+        <div class="col-sm-3" id="sidebar">
+            <aside>
+
+<section class="well well-sm">
+    <ul class="list-group list-group-flush">
+        <li class="list-group-item"><h4><i class="fa fa-home fa-lg"></i><span class="icon-label">Social</span></h4>
+              <ul class="list-group" id="social">
+                <li class="list-group-item"><a href="https://www.linkedin.com/in/justinnaldzin"><i class="fa fa-linkedin-square fa-lg"></i> LinkedIn</a></li>
+                <li class="list-group-item"><a href="https://www.github.com/justinnaldzin"><i class="fa fa-github-square fa-lg"></i> GitHub</a></li>
+                <li class="list-group-item"><a href="https://www.youtube.com/justinnaldzin"><i class="fa fa-youtube-square fa-lg"></i> YouTube</a></li>
+                <li class="list-group-item"><a href="https://www.facebook.com/justinnaldzin"><i class="fa fa-facebook-square fa-lg"></i> Facebook</a></li>
+                <li class="list-group-item"><a href="https://www.twitter.com/justinnaldzin"><i class="fa fa-twitter-square fa-lg"></i> Twitter</a></li>
+              </ul>
+            </li>
+
+
+
+
+
+
+    <li class="list-group-item"><h4><i class="fa fa-github fa-lg"></i><span class="icon-label">GitHub Repos</span></h4>
+        <div id="gh_repos">
+            <p class="list-group-item">Status updating...</p>
+        </div>
+    </li>
+    </ul>
+</section>            </aside>
+        </div>
+    </div>
+</div>
+<footer>
+   <div class="container">
+      <hr>
+      <div class="row">
+         <div class="col-xs-10">&copy; 2017 Justin Naldzin
+            &middot; Powered by <a href="https://github.com/getpelican/pelican-themes/tree/master/pelican-bootstrap3" target="_blank">pelican-bootstrap3</a>,
+            <a href="http://docs.getpelican.com/" target="_blank">Pelican</a>,
+            <a href="http://getbootstrap.com" target="_blank">Bootstrap</a>         </div>
+         <div class="col-xs-2"><p class="pull-right"><i class="fa fa-arrow-up"></i> <a href="#">Back to top</a></p></div>
+      </div>
+   </div>
+</footer>
+<script src="/theme/js/jquery.min.js"></script>
+
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="/theme/js/bootstrap.min.js"></script>
+
+<!-- Enable responsive features in IE8 with Respond.js (https://github.com/scottjehl/Respond) -->
+<script src="/theme/js/respond.min.js"></script>
+
+    <!-- GitHub JS -->
+    <script type="text/javascript">
+        $(document).ready(function () {
+            if (!window.jXHR) {
+                var jxhr = document.createElement('script');
+                jxhr.type = 'text/javascript';
+                jxhr.src = '/theme/js/jXHR.js';
+                var s = document.getElementsByTagName('script')[0];
+                s.parentNode.insertBefore(jxhr, s);
+            }
+
+            github.showRepos({
+                user: 'justinnaldzin',
+                count: 5,
+                skip_forks: false,
+                target: '#gh_repos'
+            });
+        });
+    </script>
+    <script src="/theme/js/github.js" type="text/javascript"></script>
+    <!-- End GitHub JS Code -->
+
+</body>
+</html>
