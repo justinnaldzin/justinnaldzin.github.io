@@ -13,14 +13,14 @@
 
         <meta name="author" content="Justin Naldzin" />
         <meta name="keywords" content="apache,spark,pyspark,python,jupyter" />
-        <meta name="description" content="This guide explains how to install PySpark locally and integrate with Jupyter Notebook." />
+        <meta name="description" content="This guide explains multiple ways to install Apache Spark 2.x locally and integrate with Jupyter Notebook by installing various Spark kernels." />
 
         <meta property="og:site_name" content="Justin Naldzin" />
         <meta property="og:type" content="article"/>
         <meta property="og:title" content="Apache Spark integration with Jupyter Notebook"/>
         <meta property="og:url" content="/apache-spark-integration-with-jupyter-notebook.html"/>
-        <meta property="og:description" content="This guide explains how to install PySpark locally and integrate with Jupyter Notebook."/>
-        <meta property="article:published_time" content="2017-04-11" />
+        <meta property="og:description" content="This guide explains multiple ways to install Apache Spark 2.x locally and integrate with Jupyter Notebook by installing various Spark kernels."/>
+        <meta property="article:published_time" content="2017-05-16" />
             <meta property="article:section" content="guides" />
             <meta property="article:tag" content="apache" />
             <meta property="article:tag" content="spark" />
@@ -102,7 +102,7 @@ Justin Naldzin            </a>
 <footer class="post-info">
     <span class="label label-default">Date</span>
     <span class="published">
-        <i class="fa fa-calendar"></i><time datetime="2017-04-11T00:00:00-04:00"> Tue 11 April 2017</time>
+        <i class="fa fa-calendar"></i><time datetime="2017-05-16T00:00:00-04:00"> Tue 16 May 2017</time>
     </span>
 
 
@@ -123,24 +123,34 @@ Justin Naldzin            </a>
 </footer><!-- /.post-info -->                    </div>
                 </div>
                 <h2>Table of Contents</h2>
-<p>This guide explains how to install PySpark locally and integrate with Jupyter Notebook.
-Here are the steps to follow:</p>
+<p>This guide explains multiple ways to install Apache Spark 2.x locally and integrate with Jupyter Notebook by installing various Spark kernels.</p>
 <ol>
+<li><a href="#apache-spark-2.x-overview">Apache Spark 2.x overview</a></li>
 <li><a href="#jupyter-notebook-overview">Jupyter Notebook overview</a></li>
 <li><a href="#required-packages">Install the required packages</a><ul>
 <li><a href="#python">Python 3.5+</a></li>
 <li><a href="#java">Java SE Development Kit</a></li>
-<li><a href="#apache-spark">Apache Spark 2.1.0</a></li>
-<li><a href="#scala-build-tool">Scala Build Tool</a></li>
 </ul>
 </li>
-<li><a href="#build-apache-spark">Build Apache Spark</a></li>
-<li><a href="#environment-variables">Set environment variables</a></li>
-<li><a href="#jupyter-notebook">Install Jupyter Notebook</a></li>
-<li><a href="#install-a-spark-kernel-for-jupyter-notebook">Install a Spark kernel for Jupyter Notebook</a></li>
+<li><a href="#install-apache-spark">Install Apache Spark</a><ul>
+<li><a href="#pre-built">Pre-built</a></li>
+<li><a href="#source-code">Source code</a></li>
+</ul>
+</li>
+<li><a href="#set-environment-variables">Set environment variables</a></li>
+<li><a href="#install-jupyter-notebook">Install Jupyter Notebook</a></li>
+<li><a href="#install-a-spark-kernel-for-jupyter-notebook">Install a Spark kernel for Jupyter Notebook</a><ul>
+<li><a href="#pyspark with ipythonkernel">PySpark with IPythonKernel</a></li>
+<li><a href="#apache-toree">Apache Toree</a></li>
+<li><a href="#sparkmagic">Sparkmagic</a></li>
+</ul>
+</li>
 </ol>
+<h2>Apache Spark 2.x overview</h2>
+<p>Apache Spark is an open-source cluster-computing framework.  Spark provides an interface for programming entire clusters with implicit data parallelism and fault-tolerance.  The release of Spark 2.0 included a number of significant improvements including unifying DataFrame and DataSet, replacing SQLContext and HiveContext with the SparkSession entry point, and much more.  As of this writing, Spark's latest release is 2.1.1.</p>
 <h2>Jupyter Notebook overview</h2>
-<p><a href="http://jupyter.org/">Jupyter Notebook</a> has support for over 40 programming languages, with the most popular being Python, R, Julia and Scala.  The different components of Jupyter include:</p>
+<p><a href="http://jupyter.org/">Jupyter Notebook</a> is a web-based interactive computational environment in which you can combine code execution, rich text, mathematics, plots and rich media to create a notebook.  The actual Jupyter notebook is nothing more than a JSON document containing an ordered list of input/output cells.  Jupyter notebooks an be converted to a number of open standard output formats including HTML, presentation slides, LaTeX, PDF, ReStructuredText, Markdown, and Python.</p>
+<p>Jupyter Notebook has support for over 40 programming languages, with the most popular being Python, R, Julia and Scala.  The different components of Jupyter include:</p>
 <ul>
 <li>Jupyter Notebook App</li>
 <li>Jupter documents</li>
@@ -148,84 +158,136 @@ Here are the steps to follow:</p>
 <li>Notebook Dashboard</li>
 </ul>
 <p>Be sure to check out the <a href="http://jupyter-notebook-beginner-guide.readthedocs.io/en/latest/index.html">Jupyter Notebook beginner guide</a> to learn more, including <a href="https://jupyter.readthedocs.io/en/latest/index.html">how to install Jupyter Notebook</a>.</p>
+<p>Additionally check out some <a href="https://www.dataquest.io/blog/jupyter-notebook-tips-tricks-shortcuts/">Jupyter Notebook tips, tricks and shortcuts</a>.</p>
 <h2>Required packages</h2>
-<p>Integrating PySpark with Jupyter Notebook requires the following packages:</p>
-<ol>
+<p>Integrating Spark with Jupyter Notebook requires the following packages:</p>
+<ul>
 <li>Python 3.5+</li>
 <li>Java SE Development Kit</li>
-<li>Apache Spark 2.1.0</li>
-<li>Scala Build Tool</li>
+<li>Apache Spark 2.x</li>
 <li>Jupyter Notebook</li>
-</ol>
+</ul>
 <h4>Python</h4>
 <p>Download and Install Python 3
  - <a href="https://www.python.org/downloads/">download link</a></p>
 <h4>Java</h4>
-<p>Java 7+ is required which you can download from Oracle's website</p>
+<p>Java 7+ is required for Spark which you can download from Oracle's website</p>
 <ul>
 <li><a href="https://www.java.com/en/download/faq/java_mac.xml">macOS download link</a></li>
 <li><a href="http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html">Linux download link</a></li>
 </ul>
-<h4>Apache Spark</h4>
-<p>On the <a href="http://spark.apache.org/downloads.html">Spark downloads page</a>, choose to download the zipped Spark source code (.tgz file).
-Unzip the .tgz file and move the folder to your home directory.
-Create a symbolic link from <code>$HOME/spark</code>.</p>
-<h4>Scala build tool</h4>
-<p>In order to build Spark, you will need the Scala build tool, which you can install via:</p>
+<h2>Install Apache Spark</h2>
+<p>There are two types of Spark packages available to download:</p>
 <ul>
-<li>macOS: <code>brew install sbt</code></li>
-<li>Linux: <a href="http://www.scala-sbt.org/release/tutorial/Installing-sbt-on-Linux.html">instructions</a></li>
+<li>Pre-built for Apache Hadoop 2.7 and later</li>
+<li>Source code</li>
 </ul>
-<h2>Build Apache Spark</h2>
-<p>Navigate to the directory where you unzipped Spark and run <code>sbt assembly</code> to build Spark.</p>
-<p><code>sbt package</code></p>
-<p>Or with maven</p>
-<div class="highlight"><pre><span></span>export MAVEN_OPTS=&quot;-Xmx2g -XX:ReservedCodeCacheSize=512m&quot;
-./build/mvn -Pyarn -Phadoop-2.4 -Dhadoop.version=2.4.0 -DskipTests clean package
-./build/mvn -Phadoop-2.7,yarn,mesos,hive,hive-thriftserver -DskipTests clean install
+<h4>Pre-built</h4>
+<p>The pre-built package is the simplest option.</p>
+<p>On the <a href="http://spark.apache.org/downloads.html">Spark downloads page</a>, choose to download the zipped Spark package pre-built for Apache Hadoop 2.7+.  Unzip the .tgz file and move the folder to your home directory.</p>
+<div class="highlight"><pre><span></span>wget -qO- https://d3kbcqa49mib13.cloudfront.net/spark-2.1.1-bin-hadoop2.7.tgz <span class="p">|</span> tar xvz -C ~/
 </pre></div>
 
 
-<h2>Environment variables</h2>
-<p>Add the following environment variables to your <code>~/.bash_profile</code></p>
-<div class="highlight"><pre><span></span># Spark
-export PYTHONPATH=$PYTHONPATH:$SPARK_HOME/python:$SPARK_HOME/python/lib/py4j-x.zip
-export PYSPARK_SUBMIT_ARGS=&quot;--master local[*]&quot;
-echo &quot;SPARK_HOME=/path_to_downloaded_spark/&quot; &gt;&gt; .bash_profile
-echo &quot;PATH=$PATH:/$SPARK_HOME/bin:/$SPARK_HOME/python:/$SPARK_HOME/python/lib/py4j-x.x.x-blahblah.zip&quot; &gt;&gt; .bash_profile
+<p>Create a symbolic link from this folder to <code>~/spark</code>.</p>
+<div class="highlight"><pre><span></span>ln -s ~/spark-2.1.1-bin-hadoop2.7 ~/spark
+</pre></div>
+
+
+<h4>Source code</h4>
+<p>Building from the source code offers the ability to configure specific components to install and their version numbers.</p>
+<p>On the <a href="http://spark.apache.org/downloads.html">Spark downloads page</a>, choose to download the zipped Spark source code package.  Unzip the .tgz file and move the folder to your home directory.</p>
+<div class="highlight"><pre><span></span>wget -qO- https://d3kbcqa49mib13.cloudfront.net/spark-2.1.1.tgz <span class="p">|</span> tar xvz -C ~/
+</pre></div>
+
+
+<p>Create a symbolic link from this folder to <code>~/spark</code></p>
+<div class="highlight"><pre><span></span>ln -s ~/spark-2.1.1 ~/spark
+</pre></div>
+
+
+<p>There are two options for building Spark.  The first one uses the Scala Build Tool (sbt) which needs to be installed</p>
+<h5>macOS:</h5>
+<div class="highlight"><pre><span></span>brew install sbt
+</pre></div>
+
+
+<h5>Linux:</h5>
+<div class="highlight"><pre><span></span>curl https://bintray.com/sbt/rpm/rpm <span class="p">|</span> sudo tee /etc/yum.repos.d/bintray-sbt-rpm.repo
+yum -y install sbt
+</pre></div>
+
+
+<p>Navigate to the directory where you unzipped Spark and build Spark.</p>
+<div class="highlight"><pre><span></span><span class="nb">cd</span> ~/spark
+sbt assembly
+sbt package
+</pre></div>
+
+
+<p>The second option for building Spark is with maven</p>
+<div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">MAVEN_OPTS</span><span class="o">=</span><span class="s2">&quot;-Xmx2g -XX:MaxPermSize=512M -XX:ReservedCodeCacheSize=512m&quot;</span>
+<span class="nb">cd</span> ~/spark/
+./dev/change-scala-version.sh <span class="m">2</span>.12  <span class="c1"># specify Scala v2.12</span>
+./build/mvn -Pyarn -Phadoop-2.7,yarn,mesos,hive,hive-thriftserver -Dscala-2.12 -Dhadoop.version<span class="o">=</span><span class="m">2</span>.7.0 -DskipTests clean package
+</pre></div>
+
+
+<h2>Set environment variables</h2>
+<h5>macOS:</h5>
+<p>Add the environment variables to your bash profile located at <code>~/.bash_profile</code></p>
+<div class="highlight"><pre><span></span>echo &#39;export SPARK_HOME=~/spark&#39; &gt;&gt; ~/.bash_profile
+echo &#39;export PYTHONPATH=$PYTHONPATH:$SPARK_HOME/python:$SPARK_HOME/python/lib:$SPARK_HOME/python/lib/py4j-0.10.4-src.zip&#39; &gt;&gt; ~/.bash_profile
+echo &#39;export PATH=$PATH:$SPARK_HOME/bin&#39; &gt;&gt; ~/.bash_profile
+echo &#39;export PYSPARK_PYTHON=python3&#39; &gt;&gt; ~/.bash_profile
+echo &#39;export PYSPARK_DRIVER_PYTHON=python3&#39; &gt;&gt; ~/.bash_profile
+source ~/.bash_profile
+cp $SPARK_HOME/conf/log4j.properties.template $SPARK_HOME/conf/log4j.properties  # minimize the Verbosity of Spark
+</pre></div>
+
+
+<h5>Linux:</h5>
+<p>Create a bash profile startup script located at <code>/etc/profile.d/spark.sh</code> and add the environment variables</p>
+<div class="highlight"><pre><span></span>echo &#39;export SPARK_HOME=~/spark&#39; &gt;&gt; /etc/profile.d/spark.sh
+echo &#39;export PYTHONPATH=$PYTHONPATH:$SPARK_HOME/python:$SPARK_HOME/python/lib:$SPARK_HOME/python/lib/py4j-0.10.4-src.zip&#39; &gt;&gt; /etc/profile.d/spark.sh
+echo &#39;export PATH=$PATH:$SPARK_HOME/bin&#39; &gt;&gt; /etc/profile.d/spark.sh
+echo &#39;export PYSPARK_PYTHON=python3&#39; &gt;&gt; /etc/profile.d/spark.sh
+echo &#39;export PYSPARK_DRIVER_PYTHON=python3&#39; &gt;&gt; /etc/profile.d/spark.sh
+source /etc/profile.d/spark.sh
+cp $SPARK_HOME/conf/log4j.properties.template $SPARK_HOME/conf/log4j.properties  # minimize the Verbosity of Spark
 </pre></div>
 
 
 <h2>Install Jupyter Notebook</h2>
 <p>Install with <code>pip</code></p>
-<div class="highlight"><pre><span></span>pip install jupyter
+<div class="highlight"><pre><span></span>pip3 install jupyter
 </pre></div>
 
 
 <h2>Install a Spark kernel for Jupyter Notebook</h2>
-<p>Currently there are three ways to configure Spark in Jupyter notebooks</p>
+<p>There are three ways to add Spark kernels in Jupyter notebooks</p>
 <ol>
 <li>PySpark with IPythonKernel</li>
 <li><a href="https://toree.apache.org">Apache Toree</a></li>
 <li><a href="https://github.com/jupyter-incubator/sparkmagic">Sparkmagic</a> kernel</li>
 </ol>
-<h3>Using PySpark with IPythonKernel</h3>
+<h3>PySpark with IPythonKernel</h3>
 <p>Setting up PySpark in Jupyter is the easiest way to get started with interactive Spark sessions.</p>
 <p>Define a new kernel by creating a JSON file at: <code>/usr/local/share/jupyter/kernels/pyspark/kernel.json</code></p>
 <div class="highlight"><pre><span></span><span class="p">{</span>
  <span class="nt">&quot;display_name&quot;</span><span class="p">:</span> <span class="s2">&quot;PySpark&quot;</span><span class="p">,</span>
  <span class="nt">&quot;language&quot;</span><span class="p">:</span> <span class="s2">&quot;python&quot;</span><span class="p">,</span>
  <span class="nt">&quot;argv&quot;</span><span class="p">:</span> <span class="p">[</span>
-  <span class="s2">&quot;/path/to/bin/python3&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;/usr/bin/python3&quot;</span><span class="p">,</span>
   <span class="s2">&quot;-m&quot;</span><span class="p">,</span>
   <span class="s2">&quot;ipykernel&quot;</span><span class="p">,</span>
   <span class="s2">&quot;-f&quot;</span><span class="p">,</span>
   <span class="s2">&quot;{connection_file}&quot;</span>
  <span class="p">],</span>
  <span class="nt">&quot;env&quot;</span><span class="p">:</span> <span class="p">{</span>
-  <span class="nt">&quot;SPARK_HOME&quot;</span><span class="p">:</span> <span class="s2">&quot;/path/to/spark/&quot;</span><span class="p">,</span>
-  <span class="nt">&quot;PYTHONPATH&quot;</span><span class="p">:</span> <span class="s2">&quot;/path/to/spark/python/:/path/to/spark/python/lib/py4j-0.x.x.x-src.zip&quot;</span><span class="p">,</span>
-  <span class="nt">&quot;PYTHONSTARTUP&quot;</span><span class="p">:</span> <span class="s2">&quot;/path/to/spark/python/pyspark/shell.py&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;SPARK_HOME&quot;</span><span class="p">:</span> <span class="s2">&quot;~/spark/&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;PYTHONPATH&quot;</span><span class="p">:</span> <span class="s2">&quot;~/spark/python/:~/spark/python/lib/py4j-0.x.x.x-src.zip&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;PYTHONSTARTUP&quot;</span><span class="p">:</span> <span class="s2">&quot;~/spark/python/pyspark/shell.py&quot;</span><span class="p">,</span>
   <span class="nt">&quot;PYSPARK_SUBMIT_ARGS&quot;</span><span class="p">:</span> <span class="s2">&quot;--master local[*] --conf spark.executor.cores=1 --conf spark.executor.memory=512m pyspark-shell&quot;</span>
  <span class="p">}</span>
 <span class="p">}</span>
@@ -233,21 +295,47 @@ echo &quot;PATH=$PATH:/$SPARK_HOME/bin:/$SPARK_HOME/python:/$SPARK_HOME/python/l
 
 
 <p>By adding these environment variables, calling the <code>pyspark</code> executable directly will launch Jupyter Notebook with PySpark kernel</p>
-<div class="highlight"><pre><span></span><span class="nv">PYSPARK_PYTHON</span><span class="o">=</span>python3
-<span class="nv">PYSPARK_DRIVER_PYTHON</span><span class="o">=</span><span class="s2">&quot;jupyter&quot;</span>
-<span class="nv">PYSPARK_DRIVER_PYTHON_OPTS</span><span class="o">=</span><span class="s2">&quot;notebook&quot;</span>
+<div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">PYSPARK_PYTHON</span><span class="o">=</span>python3
+<span class="nb">export</span> <span class="nv">PYSPARK_DRIVER_PYTHON</span><span class="o">=</span><span class="s2">&quot;jupyter&quot;</span>
+<span class="nb">export</span> <span class="nv">PYSPARK_DRIVER_PYTHON_OPTS</span><span class="o">=</span><span class="s2">&quot;notebook&quot;</span>
 </pre></div>
 
 
 <h3>Apache Toree</h3>
 <p>Toree is an Apache Incubating project originally created by developers at IBM.</p>
-<p>Install Apache Toree</p>
-<div class="highlight"><pre><span></span>pip install toree
+<p><strong>Note!</strong> A pip-installable package isn't currently available for Toree v0.2.0 which is required for Spark 2.x support.  Therefore we need to build and package up Toree.  This requires <a href="https://www.docker.com/">Docker</a> to be installed.</p>
+<p>Setup the Docker repository</p>
+<div class="highlight"><pre><span></span>yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+yum makecache fast
 </pre></div>
 
 
-<p>Configure Apache Toree installation with Jupyter.  Apache Toree supports multiple IPython kernels, including Python via PySpark. The beauty of Apache Toree is that it greatly simplifies adding new kernels with the –interpreters argument.</p>
-<div class="highlight"><pre><span></span>jupyter toree install --interpreters<span class="o">=</span>PySpark
+<p>Install the latest version of Docker Community Edition</p>
+<div class="highlight"><pre><span></span>yum -y install docker-ce
+usermod -aG docker $(whoami)  # add your user to the &#39;docker&#39; group
+</pre></div>
+
+
+<p>Start Docker</p>
+<div class="highlight"><pre><span></span>systemctl start docker
+systemctl enable docker
+</pre></div>
+
+
+<p>Clone and build Toree from the Toree repository from GitHub.</p>
+<div class="highlight"><pre><span></span>git clone https://github.com/apache/incubator-toree.git
+cd incubator-toree/
+APACHE_SPARK_VERSION=2.1.1 make pip-release
+</pre></div>
+
+
+<p>Install Toree from the archive</p>
+<div class="highlight"><pre><span></span>pip3 install dist/toree-pip/toree-0.2.0.dev1.tar.gz
+</pre></div>
+
+
+<p>Add all the Toree kernels to Jupyter</p>
+<div class="highlight"><pre><span></span>jupyter toree install --spark_home<span class="o">=</span><span class="nv">$SPARK_HOME</span> --interpreters<span class="o">=</span>Scala,PySpark,SparkR,SQL --python_exec<span class="o">=</span>python3 --spark_opts<span class="o">=</span><span class="s2">&quot;--master=local[*]&quot;</span>
 </pre></div>
 
 
