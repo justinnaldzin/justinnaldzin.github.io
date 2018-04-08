@@ -1,0 +1,26 @@
+7/2017 V3 release
+
+=========
+- Cards -
+=========
+
+Added:
+- Key Management Service
+- Cloud IoT Core
+- Container-Optimized OS
+- GPU
+- Data Loss Prevention API
+- Identity-Aware Proxy
+- Security Key Enforcement
+- Cloud External IP Addresses
+- Cloud Firewall Rules
+- Cloud Partner Interconnect
+- Cloud Router
+- Cloud Routes
+- Cloud VPN
+- Container Builder
+- Advanced Solutions Lab
+- Data Transfer Appliance
+
+Updated:
+- All

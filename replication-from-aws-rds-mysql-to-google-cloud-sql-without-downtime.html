@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="en" prefix="og: http://ogp.me/ns# fb: https://www.facebook.com/2008/fbml">
+<head>
+    <title>Replication from AWS RDS MySQL to Google Cloud SQL (without downtime) - Justin Naldzin</title>
+    <!-- Using the latest rendering mode for IE -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+
+<link rel="canonical" href="/replication-from-aws-rds-mysql-to-google-cloud-sql-without-downtime.html">
+
+        <meta name="author" content="Justin Naldzin" />
+        <meta name="keywords" content="aws,google cloud,rds,cloud sql,mysql" />
+        <meta name="description" content="The following guide performs cloud-to-cloud replication from Amazon Relational Database Service (RDS) to Google Cloud SQL." />
+
+        <meta property="og:site_name" content="Justin Naldzin" />
+        <meta property="og:type" content="article"/>
+        <meta property="og:title" content="Replication from AWS RDS MySQL to Google Cloud SQL (without downtime)"/>
+        <meta property="og:url" content="/replication-from-aws-rds-mysql-to-google-cloud-sql-without-downtime.html"/>
+        <meta property="og:description" content="The following guide performs cloud-to-cloud replication from Amazon Relational Database Service (RDS) to Google Cloud SQL."/>
+        <meta property="article:published_time" content="2018-04-07" />
+            <meta property="article:section" content="guides" />
+            <meta property="article:tag" content="aws" />
+            <meta property="article:tag" content="google cloud" />
+            <meta property="article:tag" content="rds" />
+            <meta property="article:tag" content="cloud sql" />
+            <meta property="article:tag" content="mysql" />
+            <meta property="article:author" content="Justin Naldzin" />
+
+
+
+    <!-- Bootstrap -->
+        <link rel="stylesheet" href="/theme/css/bootstrap.paper.min.css" type="text/css"/>
+    <link href="/theme/css/font-awesome.min.css" rel="stylesheet">
+
+    <link href="/theme/css/pygments/emacs.css" rel="stylesheet">
+    <link rel="stylesheet" href="/theme/css/style.css" type="text/css"/>
+
+
+
+
+
+</head>
+<body>
+
+<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a href="/" class="navbar-brand">
+Justin Naldzin            </a>
+        </div>
+        <div class="collapse navbar-collapse navbar-ex1-collapse">
+            <ul class="nav navbar-nav">
+                        <li >
+                            <a href="/category/about.html">About</a>
+                        </li>
+                        <li >
+                            <a href="/category/github-repos.html">Github repos</a>
+                        </li>
+                        <li class="active">
+                            <a href="/category/guides.html">Guides</a>
+                        </li>
+                        <li >
+                            <a href="/category/internet-of-things.html">Internet of things</a>
+                        </li>
+                        <li >
+                            <a href="/category/notebooks.html">Notebooks</a>
+                        </li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+</div> <!-- /.navbar -->
+
+<!-- Banner -->
+<!-- End Banner -->
+
+<!-- Content Container -->
+<div class="container">
+    <div class="row">
+        <div class="col-sm-9">
+    <section id="content">
+        <article>
+            <header class="page-header">
+                <h1>
+                    <a href="/replication-from-aws-rds-mysql-to-google-cloud-sql-without-downtime.html"
+                       rel="bookmark"
+                       title="Permalink to Replication from AWS RDS MySQL to Google Cloud SQL (without downtime)">
+                        Replication from AWS RDS MySQL to Google Cloud SQL (without downtime)
+                    </a>
+                </h1>
+            </header>
+            <div class="entry-content">
+                <div class="panel">
+                    <div class="panel-body">
+<footer class="post-info">
+    <span class="label label-default">Date</span>
+    <span class="published">
+        <i class="fa fa-calendar"></i><time datetime="2018-04-07T00:00:00-04:00"> Sat 07 April 2018</time>
+    </span>
+
+
+
+
+
+<span class="label label-default">Tags</span>
+	<a href="/tag/aws.html">aws</a>
+        /
+	<a href="/tag/google-cloud.html">google cloud</a>
+        /
+	<a href="/tag/rds.html">rds</a>
+        /
+	<a href="/tag/cloud-sql.html">cloud sql</a>
+        /
+	<a href="/tag/mysql.html">mysql</a>
+    
+</footer><!-- /.post-info -->                    </div>
+                </div>
+                <h2>Overview</h2>
+<p>The following guide performs cloud-to-cloud replication from <a href="https://aws.amazon.com/rds/">Amazon Relational Database Service (RDS)</a> to <a href="https://cloud.google.com/sql/docs/">Google Cloud SQL</a>.</p>
+<p align="center">
+<img src="images/logos/aws_rds.png" alt="RDS" height="200" hspace="50">
+<img src="images/logos/gcp_cloudsql.png" alt="Cloud SQL" height="200" hspace="50">
+</p>
+
+<h4>Requirements</h4>
+<p>Replicating AWS RDS instances to Google Cloud SQL requires the following:</p>
+<ol>
+<li>The AWS RDS master must have an Elastic (public) IP address which enables the instance to be reached from the Internet.  Both <a href="https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_VPC.Scenarios.html#USER_VPC.Scenario4">VPC</a> and <a href="https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_VPC.Scenarios.html#USER_VPC.Scenario6">non-VPC</a> networks are supported.</li>
+<li>The AWS RDS database engine must be MySQL v5.5 or v5.6.  PostgreSQL is <a href="https://cloud.google.com/sql/docs/postgres/replication/configure-external-master">not yet supported</a> in Cloud SQL.</li>
+<li>Binary logging format must be <code>ROW</code> on the RDS master requiring an instance restart*.</li>
+<li>*Creating a separate read-replica avoids downtime to the master instance.</li>
+<li>The <code>server-id</code> option must be set to a value of 2 or larger.</li>
+</ol>
+<p>There are a few <a href="https://cloud.google.com/sql/docs/mysql/replication/tips#external-master">additional requirements</a> for Cloud SQL but the above addresses specifics to default configurations of AWS RDS.</p>
+<h4>Replication types</h4>
+<p>Google Cloud SQL supports <a href="https://cloud.google.com/sql/docs/mysql/replication/">three replication types</a> to replicate a master instance to one or more read-replicas:</p>
+<ol>
+<li>Read-Replica (Cloud SQL instances that replicate from a Cloud SQL master instance)</li>
+<li>External Read-Replica (external MySQL instances that are replicating from a Cloud SQL master)</li>
+<li><strong>External master (External MySQL instance to Cloud SQL)</strong></li>
+</ol>
+<h4>External master</h4>
+<p><a href="https://cloud.google.com/sql/docs/mysql/replication/tips#external-master">External masters</a> are MySQL instances that are external to Cloud SQL (such as AWS RDS) and serve as masters to a Cloud SQL instance.</p>
+<p><img alt="image" src="https://cloud.google.com/sql/images/external-master.svg"></p>
+<h2>AWS RDS MySQL Configuration</h2>
+<h3>AWS Credentials</h3>
+<p>Ensure AWS CLI credentials exist:</p>
+<p><strong>~/.aws/credentials</strong></p>
+<div class="highlight"><pre><span></span><span class="o">[</span>default<span class="o">]</span>
+<span class="nv">aws_access_key_id</span><span class="o">=</span>AKIAIOSFODNN7EXAMPLE
+<span class="nv">aws_secret_access_key</span><span class="o">=</span>wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+
+<span class="o">[</span>my-named-profile<span class="o">]</span>
+<span class="nv">aws_access_key_id</span><span class="o">=</span>AKIAI44QH8DHBEXAMPLE
+<span class="nv">aws_secret_access_key</span><span class="o">=</span>je7MtGbClwBF/2Zp9Utk/h3yCo8nvbEXAMPLEKEY
+</pre></div>
+
+
+<p>Use the correct named profile:</p>
+<div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">AWS_PROFILE</span><span class="o">=</span>my-named-profile
+</pre></div>
+
+
+<h3>Identify VPC</h3>
+<p>If the RDS instance exists within a VPC, we need to specify that VPC:</p>
+<div class="highlight"><pre><span></span><span class="c1"># default VPC</span>
+<span class="nv">VPC_ID</span><span class="o">=</span><span class="k">$(</span>aws ec2 describe-vpcs <span class="se">\</span>
+--output text <span class="se">\</span>
+--filters <span class="nv">Name</span><span class="o">=</span>isDefault,Values<span class="o">=</span><span class="nb">true</span> <span class="se">\</span>
+--query <span class="s1">&#39;Vpcs[0].VpcId&#39;</span><span class="k">)</span>
+
+<span class="c1"># by name</span>
+<span class="nv">VPC_ID</span><span class="o">=</span><span class="k">$(</span>aws ec2 describe-vpcs <span class="se">\</span>
+--output text <span class="se">\</span>
+--filters <span class="nv">Name</span><span class="o">=</span>tag:Name,Values<span class="o">=</span><span class="s2">&quot;My Named VPC&quot;</span> <span class="se">\</span>
+--query <span class="s1">&#39;Vpcs[0].VpcId&#39;</span><span class="k">)</span>
+
+<span class="c1"># manually specify ID</span>
+<span class="nv">VPC_ID</span><span class="o">=</span>vpc-1a2b3c4d
+</pre></div>
+
+
+<h3>Create security groups</h3>
+<p>This allows TCP ingress on MySQL port 3306 from specific IPs using CIDR notation.</p>
+<h5>Allow access from specific IPs</h5>
+<div class="highlight"><pre><span></span><span class="nv">SECURITY_GROUP_NAME</span><span class="o">=</span>rds-mysql
+<span class="nv">IPS</span><span class="o">=</span><span class="s2">&quot;10.35.19.31/32 10.88.52.130/32 10.26.47.1/32 10.24.172.83/32&quot;</span>
+aws ec2 create-security-group <span class="se">\</span>
+--group-name <span class="nv">$SECURITY_GROUP_NAME</span> <span class="se">\</span>
+--description <span class="s2">&quot;Allow ingress on 3306 for MySQL&quot;</span> <span class="se">\</span>
+--vpc-id<span class="o">=</span><span class="nv">$VPC_ID</span>
+<span class="k">for</span> IP in <span class="nv">$IPS</span>
+<span class="k">do</span>
+   aws ec2 authorize-security-group-ingress <span class="se">\</span>
+   --group-name <span class="nv">$SECURITY_GROUP_NAME</span> <span class="se">\</span>
+   --protocol tcp <span class="se">\</span>
+   --cidr <span class="nv">$IP</span> <span class="se">\</span>
+   --port <span class="m">3306</span>
+<span class="k">done</span>
+<span class="nv">SECURITY_GROUP_ID</span><span class="o">=</span><span class="k">$(</span>aws ec2 describe-security-groups <span class="se">\</span>
+--output text <span class="se">\</span>
+--filters <span class="nv">Name</span><span class="o">=</span>group-name,Values<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$SECURITY_GROUP_NAME</span><span class="s2">&quot;</span> <span class="se">\</span>
+--query <span class="s1">&#39;SecurityGroups[0].GroupId&#39;</span><span class="k">)</span>
+</pre></div>
+
+
+<h5>Allow access from local IP</h5>
+<div class="highlight"><pre><span></span><span class="nv">SECURITY_GROUP_NAME</span><span class="o">=</span>rds-mysql-local
+<span class="nv">CIDR</span><span class="o">=</span><span class="k">$(</span>curl -s ifconfig.co<span class="k">)</span>/32
+aws ec2 create-security-group <span class="se">\</span>
+--group-name <span class="nv">$SECURITY_GROUP_NAME</span> <span class="se">\</span>
+--description <span class="s2">&quot;Allow ingress on 3306 for MySQL from local IP&quot;</span> <span class="se">\</span>
+--vpc-id<span class="o">=</span><span class="nv">$VPC_ID</span>
+aws ec2 authorize-security-group-ingress <span class="se">\</span>
+--group-name <span class="nv">$SECURITY_GROUP_NAME</span> <span class="se">\</span>
+--protocol tcp <span class="se">\</span>
+--cidr <span class="nv">$CIDR</span> <span class="se">\</span>
+--port <span class="m">3306</span>
+<span class="nv">SECURITY_GROUP_ID</span><span class="o">=</span><span class="k">$(</span>aws ec2 describe-security-groups <span class="se">\</span>
+--output text <span class="se">\</span>
+--filters <span class="nv">Name</span><span class="o">=</span>group-name,Values<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$SECURITY_GROUP_NAME</span><span class="s2">&quot;</span> <span class="se">\</span>
+--query <span class="s1">&#39;SecurityGroups[0].GroupId&#39;</span><span class="k">)</span>
+</pre></div>
+
+
+<h5>Allow access from anywhere*</h5>
+<blockquote>
+<p>*Not recommended in production.  Use only for testing.</p>
+</blockquote>
+<div class="highlight"><pre><span></span><span class="nv">SECURITY_GROUP_NAME</span><span class="o">=</span>rds-mysql-anywhere
+<span class="nv">CIDR</span><span class="o">=</span><span class="m">0</span>.0.0.0/0
+aws ec2 create-security-group <span class="se">\</span>
+--group-name <span class="nv">$SECURITY_GROUP_NAME</span> <span class="se">\</span>
+--description <span class="s2">&quot;Allow ingress on 3306 for MySQL from anywhere&quot;</span> <span class="se">\</span>
+--vpc-id<span class="o">=</span><span class="nv">$VPC_ID</span>
+aws ec2 authorize-security-group-ingress <span class="se">\</span>
+--group-id <span class="nv">$SECURITY_GROUP_ID</span> <span class="se">\</span>
+--protocol tcp <span class="se">\</span>
+--cidr <span class="nv">$CIDR</span> <span class="se">\</span>
+--port <span class="m">3306</span>
+<span class="nv">SECURITY_GROUP_ID</span><span class="o">=</span><span class="k">$(</span>aws ec2 describe-security-groups <span class="se">\</span>
+--output text <span class="se">\</span>
+--filters <span class="nv">Name</span><span class="o">=</span>group-name,Values<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$SECURITY_GROUP_NAME</span><span class="s2">&quot;</span> <span class="se">\</span>
+--query <span class="s1">&#39;SecurityGroups[0].GroupId&#39;</span><span class="k">)</span>
+</pre></div>
+
+
+<h3>Create custom parameter group</h3>
+<p>It is a requirement for Cloud SQL to have binary logging enabled on the master as well as setting the config <code>binlog_format=ROW</code>.  Enabling binary logging <a href="https://cloud.google.com/sql/docs/mysql/replication/tips#bin-log-impact">impacts the master</a> by requiring an instance restart.  Existing database connections are lost and must be reestablished.  To avoid instance restart, you would create an RDS read-replica using the following parameter group.</p>
+<div class="highlight"><pre><span></span><span class="nv">DB_PARAMETER_GROUP</span><span class="o">=</span>custom-mysql5-6
+aws rds create-db-parameter-group <span class="se">\</span>
+--db-parameter-group-name <span class="nv">$DB_PARAMETER_GROUP</span> <span class="se">\</span>
+--db-parameter-group-family MySQL5.6 <span class="se">\</span>
+--description <span class="s2">&quot;Parameter: binlog_format=ROW&quot;</span>
+aws rds modify-db-parameter-group <span class="se">\</span>
+--db-parameter-group-name <span class="nv">$DB_PARAMETER_GROUP</span> <span class="se">\</span>
+--parameters <span class="s2">&quot;ParameterName=binlog_format,ParameterValue=ROW,ApplyMethod=immediate&quot;</span>
+</pre></div>
+
+
+<h2>RDS MySQL instance : testing</h2>
+<p>Follow these steps to create a test RDS instance as a <em>proof-of-concept</em>.  If you already have an RDS instance running, skip to <a href="#rds-mysql-instance-:-production">RDS MySQL instance : production</a>.</p>
+<h3>Create MySQL DB instance</h3>
+<div class="highlight"><pre><span></span><span class="nv">DB_INSTANCE_IDENTIFIER</span><span class="o">=</span>mysql-instance1
+<span class="nv">DB_NAME</span><span class="o">=</span>mytestdb
+<span class="nv">ENGINE</span><span class="o">=</span>mysql
+<span class="nv">ENGINE_VERSION</span><span class="o">=</span><span class="m">5</span>.6.36
+<span class="nv">AVAILABILITY_ZONE</span><span class="o">=</span>us-east-1d
+<span class="nv">MASTER_USERNAME</span><span class="o">=</span>root
+<span class="nv">MASTER_USER_PASSWORD</span><span class="o">=</span>myrootpass
+<span class="nv">AVAILABILITY_ZONE</span><span class="o">=</span>us-east-1a
+<span class="nv">DB_SUBNET_GROUP</span><span class="o">=</span>default-vpc-1a2b3c4d
+aws rds create-db-instance <span class="se">\</span>
+--db-instance-identifier <span class="nv">$DB_INSTANCE_IDENTIFIER</span> <span class="se">\</span>
+--db-instance-class db.t2.micro <span class="se">\</span>
+--storage-type gp2 <span class="se">\</span>
+--allocated-storage <span class="m">20</span> <span class="se">\</span>
+--availability-zone <span class="nv">$AVAILABILITY_ZONE</span> <span class="se">\</span>
+--engine <span class="nv">$ENGINE</span> <span class="se">\</span>
+--db-name <span class="nv">$DB_NAME</span> <span class="se">\</span>
+--master-username <span class="nv">$MASTER_USERNAME</span> <span class="se">\</span>
+--master-user-password <span class="nv">$MASTER_USER_PASSWORD</span> <span class="se">\</span>
+--vpc-security-group-ids<span class="o">=</span><span class="nv">$SECURITY_GROUP_ID</span> <span class="se">\</span>
+--db-parameter-group-name <span class="nv">$DB_PARAMETER_GROUP</span> <span class="se">\</span>
+--db-subnet-group-name<span class="o">=</span><span class="nv">$DB_SUBNET_GROUP</span>
+</pre></div>
+
+
+<h3>Wait until instance is available</h3>
+<div class="highlight"><pre><span></span>aws rds <span class="nb">wait</span> db-instance-available <span class="se">\</span>
+--db-instance-identifier <span class="nv">$DB_INSTANCE_IDENTIFIER</span>
+</pre></div>
+
+
+<h3>Insert test data into database</h3>
+<div class="highlight"><pre><span></span><span class="nv">RDS_MASTER_HOSTNAME</span><span class="o">=</span><span class="k">$(</span>aws rds describe-db-instances <span class="se">\</span>
+--db-instance-identifier <span class="nv">$DB_INSTANCE_IDENTIFIER</span> <span class="se">\</span>
+--output text <span class="se">\</span>
+--query DBInstances<span class="o">[</span><span class="m">0</span><span class="o">]</span>.Endpoint.Address<span class="k">)</span>
+
+<span class="c1"># create table</span>
+curl -s <span class="s2">&quot;https://api.mockaroo.com/api/57b951e0?count=0&amp;key=3666cca0&quot;</span> <span class="p">|</span> mysql -h <span class="nv">$RDS_MASTER_HOSTNAME</span> -u <span class="nv">$MASTER_USERNAME</span> -p<span class="nv">$MASTER_USER_PASSWORD</span> <span class="nv">$DB_NAME</span>
+
+<span class="c1"># insert data</span>
+curl -s <span class="s2">&quot;https://api.mockaroo.com/api/1cf77ef0?count=1000&amp;key=3666cca0&quot;</span> <span class="p">|</span> mysql -h <span class="nv">$RDS_MASTER_HOSTNAME</span> -u <span class="nv">$MASTER_USERNAME</span> -p<span class="nv">$MASTER_USER_PASSWORD</span> <span class="nv">$DB_NAME</span>
+</pre></div>
+
+
+<h2>RDS MySQL instance : production</h2>
+<h3>Export data with mysqldump</h3>
+<p>See <a href="https://cloud.google.com/sql/docs/mysql/import-export/creating-sqldump-csv">Google Cloud SQL requirements</a> for creating a SQL dump file.</p>
+<blockquote>
+<p>NOTE:  Using the <code>mysqldump --master-data</code> option is necessary to find the precise binlog coordinates where the backup begins.  This requires <code>SUPER</code> privileges which RDS does NOT allow.  See <a href="https://stackoverflow.com/a/20645291/9370950">https://stackoverflow.com/a/20645291/9370950</a></p>
+<p>The workaround is to:</p>
+<ol>
+<li>Create an RDS read-replica of the RDS master</li>
+<li>Stop replication on the RDS read-replica</li>
+<li>Note the replica's binlog coordinates</li>
+<li>Create logical backup using <code>mysqldump</code> on the RDS read-replica</li>
+<li>Inject the binlog coordinates into the backup file</li>
+</ol>
+</blockquote>
+<h3>Create RDS read-replica</h3>
+<div class="highlight"><pre><span></span><span class="nv">DB_INSTANCE_IDENTIFIER</span><span class="o">=</span>mysql-instance1
+<span class="nv">REPLICA_INSTANCE_IDENTIFIER</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">DB_INSTANCE_IDENTIFIER</span><span class="si">}</span><span class="s2">-replica&quot;</span>
+aws rds create-db-instance-read-replica <span class="se">\</span>
+--db-instance-identifier <span class="nv">$REPLICA_INSTANCE_IDENTIFIER</span> <span class="se">\</span>
+--source-db-instance-identifier <span class="nv">$DB_INSTANCE_IDENTIFIER</span>
+</pre></div>
+
+
+<h3>Wait until instance is available</h3>
+<div class="highlight"><pre><span></span>aws rds <span class="nb">wait</span> db-instance-available <span class="se">\</span>
+--db-instance-identifier <span class="nv">$REPLICA_INSTANCE_IDENTIFIER</span>
+aws rds describe-db-instances <span class="se">\</span>
+--db-instance-identifier <span class="nv">$REPLICA_INSTANCE_IDENTIFIER</span> <span class="se">\</span>
+--output text <span class="se">\</span>
+--query DBInstances<span class="o">[</span><span class="m">0</span><span class="o">]</span>.StatusInfos
+</pre></div>
+
+
+<h3>Stop replication</h3>
+<div class="highlight"><pre><span></span><span class="nv">MASTER_USERNAME</span><span class="o">=</span>root
+<span class="nv">MASTER_USER_PASSWORD</span><span class="o">=</span>myrootpass
+<span class="nv">RDS_REPLICA_HOSTNAME</span><span class="o">=</span><span class="k">$(</span>aws rds describe-db-instances <span class="se">\</span>
+--db-instance-identifier <span class="nv">$REPLICA_INSTANCE_IDENTIFIER</span> <span class="se">\</span>
+--output text <span class="se">\</span>
+--query DBInstances<span class="o">[</span><span class="m">0</span><span class="o">]</span>.Endpoint.Address<span class="k">)</span>
+mysql -h <span class="nv">$RDS_REPLICA_HOSTNAME</span> -u <span class="nv">$MASTER_USERNAME</span> -p<span class="nv">$MASTER_USER_PASSWORD</span> -e <span class="s2">&quot;CALL mysql.rds_stop_replication;&quot;</span>
+</pre></div>
+
+
+<h3>Note the master coordinates of the binlog</h3>
+<p>On the read-replica, run <code>SHOW SLAVE STATUS</code> to view the master coordinates, noting the following values:</p>
+<ul>
+<li><code>Exec_Master_Log_Pos</code></li>
+<li><code>Relay_Master_Log_File</code></li>
+</ul>
+<div class="highlight"><pre><span></span><span class="nv">EXEC_MASTER_LOG_POS</span><span class="o">=</span><span class="k">$(</span>mysql -h <span class="nv">$RDS_REPLICA_HOSTNAME</span> -u <span class="nv">$MASTER_USERNAME</span> -p<span class="nv">$MASTER_USER_PASSWORD</span> -e <span class="s2">&quot;SHOW SLAVE STATUS\G&quot;</span> <span class="p">|</span> grep <span class="s2">&quot;Exec_Master_Log_Pos&quot;</span> <span class="p">|</span> awk <span class="s1">&#39;{ print $2 }&#39;</span><span class="k">)</span>
+<span class="nv">RELAY_MASTER_LOG_FILE</span><span class="o">=</span><span class="k">$(</span>mysql -h <span class="nv">$RDS_REPLICA_HOSTNAME</span> -u <span class="nv">$MASTER_USERNAME</span> -p<span class="nv">$MASTER_USER_PASSWORD</span> -e <span class="s2">&quot;SHOW SLAVE STATUS\G&quot;</span> <span class="p">|</span> grep <span class="s2">&quot;Relay_Master_Log_File&quot;</span> <span class="p">|</span> awk <span class="s1">&#39;{ print $2 }&#39;</span><span class="k">)</span>
+</pre></div>
+
+
+<h3>Create backup of the RDS read-replica</h3>
+<div class="highlight"><pre><span></span><span class="nv">BACKUP_FILE</span><span class="o">=</span>rds_backup.sql
+<span class="nv">DB_NAME</span><span class="o">=</span>myproddb
+mysqldump --databases <span class="nv">$DB_NAME</span> -h <span class="nv">$RDS_REPLICA_HOSTNAME</span> -u <span class="nv">$MASTER_USERNAME</span> -p<span class="nv">$MASTER_USER_PASSWORD</span> <span class="se">\</span>
+--flush-privileges <span class="se">\</span>
+--hex-blob <span class="se">\</span>
+--skip-triggers <span class="se">\</span>
+--default-character-set<span class="o">=</span>utf8 <span class="se">\</span>
+--order-by-primary <span class="se">\</span>
+--single-transaction &gt; <span class="nv">$BACKUP_FILE</span>
+</pre></div>
+
+
+<h3>Add binlog coordinates to backup file</h3>
+<div class="highlight"><pre><span></span><span class="nb">echo</span> <span class="s2">&quot;\n\n-- Position to start replication or point-in-time recovery from\nCHANGE MASTER TO MASTER_LOG_FILE=&#39;</span><span class="nv">$RELAY_MASTER_LOG_FILE</span><span class="s2">&#39;, MASTER_LOG_POS=</span><span class="nv">$EXEC_MASTER_LOG_POS</span><span class="s2">;&quot;</span> &gt;&gt; <span class="nv">$BACKUP_FILE</span>
+</pre></div>
+
+
+<h3>Add RDS specific tables to backup file</h3>
+<p>Add the following to the backup file</p>
+<div class="highlight"><pre><span></span>-- RDS tables
+
+CREATE TABLE <span class="sb">`</span>rds_configuration<span class="sb">`</span> <span class="o">(</span>  
+  <span class="sb">`</span>name<span class="sb">`</span> varchar<span class="o">(</span><span class="m">100</span><span class="o">)</span> NOT NULL,
+  <span class="sb">`</span>value<span class="sb">`</span> varchar<span class="o">(</span><span class="m">100</span><span class="o">)</span> DEFAULT NULL,
+  <span class="sb">`</span>description<span class="sb">`</span> varchar<span class="o">(</span><span class="m">300</span><span class="o">)</span> NOT NULL,
+  PRIMARY KEY <span class="o">(</span><span class="sb">`</span>name<span class="sb">`</span><span class="o">)</span>
+<span class="o">)</span> <span class="nv">ENGINE</span><span class="o">=</span>InnoDB DEFAULT <span class="nv">CHARSET</span><span class="o">=</span>latin1
+
+CREATE TABLE <span class="sb">`</span>rds_global_status_history<span class="sb">`</span> <span class="o">(</span>  
+  <span class="sb">`</span>collection_end<span class="sb">`</span> timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  <span class="sb">`</span>collection_start<span class="sb">`</span> timestamp NULL DEFAULT NULL,
+  <span class="sb">`</span>variable_name<span class="sb">`</span> varchar<span class="o">(</span><span class="m">64</span><span class="o">)</span> NOT NULL,
+  <span class="sb">`</span>variable_value<span class="sb">`</span> varchar<span class="o">(</span><span class="m">1024</span><span class="o">)</span> NOT NULL,
+  <span class="sb">`</span>variable_delta<span class="sb">`</span> int<span class="o">(</span><span class="m">20</span><span class="o">)</span> NOT NULL,
+  PRIMARY KEY <span class="o">(</span><span class="sb">`</span>collection_end<span class="sb">`</span>,<span class="sb">`</span>variable_name<span class="sb">`</span><span class="o">)</span>
+<span class="o">)</span> <span class="nv">ENGINE</span><span class="o">=</span>InnoDB DEFAULT <span class="nv">CHARSET</span><span class="o">=</span>latin1<span class="p">;</span>
+
+ CREATE TABLE <span class="sb">`</span>rds_global_status_history_old<span class="sb">`</span> <span class="o">(</span>
+  <span class="sb">`</span>collection_end<span class="sb">`</span> timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  <span class="sb">`</span>collection_start<span class="sb">`</span> timestamp NULL DEFAULT NULL,
+  <span class="sb">`</span>variable_name<span class="sb">`</span> varchar<span class="o">(</span><span class="m">64</span><span class="o">)</span> NOT NULL,
+  <span class="sb">`</span>variable_value<span class="sb">`</span> varchar<span class="o">(</span><span class="m">1024</span><span class="o">)</span> NOT NULL,
+  <span class="sb">`</span>variable_delta<span class="sb">`</span> int<span class="o">(</span><span class="m">20</span><span class="o">)</span> NOT NULL,
+  PRIMARY KEY <span class="o">(</span><span class="sb">`</span>collection_end<span class="sb">`</span>,<span class="sb">`</span>variable_name<span class="sb">`</span><span class="o">)</span>
+<span class="o">)</span> <span class="nv">ENGINE</span><span class="o">=</span>InnoDB DEFAULT <span class="nv">CHARSET</span><span class="o">=</span>latin1<span class="p">;</span>
+
+ CREATE TABLE <span class="sb">`</span>rds_heartbeat2<span class="sb">`</span> <span class="o">(</span>
+  <span class="sb">`</span>id<span class="sb">`</span> int<span class="o">(</span><span class="m">11</span><span class="o">)</span> NOT NULL,
+  <span class="sb">`</span>value<span class="sb">`</span> bigint<span class="o">(</span><span class="m">20</span><span class="o">)</span> DEFAULT NULL,
+  PRIMARY KEY <span class="o">(</span><span class="sb">`</span>id<span class="sb">`</span><span class="o">)</span>
+<span class="o">)</span> <span class="nv">ENGINE</span><span class="o">=</span>InnoDB DEFAULT <span class="nv">CHARSET</span><span class="o">=</span>latin1<span class="p">;</span>
+
+CREATE TABLE <span class="sb">`</span>rds_history<span class="sb">`</span> <span class="o">(</span>  
+  <span class="sb">`</span>action_timestamp<span class="sb">`</span> timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  <span class="sb">`</span>called_by_user<span class="sb">`</span> varchar<span class="o">(</span><span class="m">50</span><span class="o">)</span> NOT NULL,
+  <span class="sb">`</span>action<span class="sb">`</span> varchar<span class="o">(</span><span class="m">20</span><span class="o">)</span> NOT NULL,
+  <span class="sb">`</span>mysql_version<span class="sb">`</span> varchar<span class="o">(</span><span class="m">50</span><span class="o">)</span> NOT NULL,
+  <span class="sb">`</span>master_host<span class="sb">`</span> varchar<span class="o">(</span><span class="m">255</span><span class="o">)</span> DEFAULT NULL,
+  <span class="sb">`</span>master_port<span class="sb">`</span> int<span class="o">(</span><span class="m">11</span><span class="o">)</span> DEFAULT NULL,
+  <span class="sb">`</span>master_user<span class="sb">`</span> varchar<span class="o">(</span><span class="m">16</span><span class="o">)</span> DEFAULT NULL,
+  <span class="sb">`</span>master_log_file<span class="sb">`</span> varchar<span class="o">(</span><span class="m">50</span><span class="o">)</span> DEFAULT NULL,
+  <span class="sb">`</span>master_log_pos<span class="sb">`</span> mediumtext,
+  <span class="sb">`</span>master_ssl<span class="sb">`</span> tinyint<span class="o">(</span><span class="m">1</span><span class="o">)</span> DEFAULT NULL
+<span class="o">)</span> <span class="nv">ENGINE</span><span class="o">=</span>InnoDB DEFAULT <span class="nv">CHARSET</span><span class="o">=</span>latin1<span class="p">;</span>
+
+CREATE TABLE <span class="sb">`</span>rds_replication_status<span class="sb">`</span> <span class="o">(</span>  
+  <span class="sb">`</span>action_timestamp<span class="sb">`</span> timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  <span class="sb">`</span>called_by_user<span class="sb">`</span> varchar<span class="o">(</span><span class="m">50</span><span class="o">)</span> NOT NULL,
+  <span class="sb">`</span>action<span class="sb">`</span> varchar<span class="o">(</span><span class="m">20</span><span class="o">)</span> NOT NULL,
+  <span class="sb">`</span>mysql_version<span class="sb">`</span> varchar<span class="o">(</span><span class="m">50</span><span class="o">)</span> NOT NULL,
+  <span class="sb">`</span>master_host<span class="sb">`</span> varchar<span class="o">(</span><span class="m">255</span><span class="o">)</span> DEFAULT NULL,
+  <span class="sb">`</span>master_port<span class="sb">`</span> int<span class="o">(</span><span class="m">11</span><span class="o">)</span> DEFAULT NULL
+<span class="o">)</span> <span class="nv">ENGINE</span><span class="o">=</span>InnoDB DEFAULT <span class="nv">CHARSET</span><span class="o">=</span>latin1<span class="p">;</span>
+
+CREATE TABLE <span class="sb">`</span>rds_sysinfo<span class="sb">`</span> <span class="o">(</span>  
+  <span class="sb">`</span>name<span class="sb">`</span> varchar<span class="o">(</span><span class="m">25</span><span class="o">)</span> DEFAULT NULL,
+  <span class="sb">`</span>value<span class="sb">`</span> varchar<span class="o">(</span><span class="m">50</span><span class="o">)</span> DEFAULT NULL
+<span class="o">)</span> <span class="nv">ENGINE</span><span class="o">=</span>InnoDB DEFAULT <span class="nv">CHARSET</span><span class="o">=</span>latin1<span class="p">;</span>
+
+CREATE TABLE <span class="sb">`</span>host<span class="sb">`</span> <span class="o">(</span>  
+  <span class="sb">`</span>Host<span class="sb">`</span> char<span class="o">(</span><span class="m">60</span><span class="o">)</span> COLLATE utf8_bin NOT NULL DEFAULT <span class="s1">&#39;&#39;</span>,
+  <span class="sb">`</span>Db<span class="sb">`</span> char<span class="o">(</span><span class="m">64</span><span class="o">)</span> COLLATE utf8_bin NOT NULL DEFAULT <span class="s1">&#39;&#39;</span>,
+  <span class="sb">`</span>Select_priv<span class="sb">`</span> enum<span class="o">(</span><span class="s1">&#39;N&#39;</span>,<span class="s1">&#39;Y&#39;</span><span class="o">)</span> CHARACTER SET utf8 NOT NULL DEFAULT <span class="s1">&#39;N&#39;</span>,
+  <span class="sb">`</span>Insert_priv<span class="sb">`</span> enum<span class="o">(</span><span class="s1">&#39;N&#39;</span>,<span class="s1">&#39;Y&#39;</span><span class="o">)</span> CHARACTER SET utf8 NOT NULL DEFAULT <span class="s1">&#39;N&#39;</span>,
+  <span class="sb">`</span>Update_priv<span class="sb">`</span> enum<span class="o">(</span><span class="s1">&#39;N&#39;</span>,<span class="s1">&#39;Y&#39;</span><span class="o">)</span> CHARACTER SET utf8 NOT NULL DEFAULT <span class="s1">&#39;N&#39;</span>,
+  <span class="sb">`</span>Delete_priv<span class="sb">`</span> enum<span class="o">(</span><span class="s1">&#39;N&#39;</span>,<span class="s1">&#39;Y&#39;</span><span class="o">)</span> CHARACTER SET utf8 NOT NULL DEFAULT <span class="s1">&#39;N&#39;</span>,
+  <span class="sb">`</span>Create_priv<span class="sb">`</span> enum<span class="o">(</span><span class="s1">&#39;N&#39;</span>,<span class="s1">&#39;Y&#39;</span><span class="o">)</span> CHARACTER SET utf8 NOT NULL DEFAULT <span class="s1">&#39;N&#39;</span>,
+  <span class="sb">`</span>Drop_priv<span class="sb">`</span> enum<span class="o">(</span><span class="s1">&#39;N&#39;</span>,<span class="s1">&#39;Y&#39;</span><span class="o">)</span> CHARACTER SET utf8 NOT NULL DEFAULT <span class="s1">&#39;N&#39;</span>,
+  <span class="sb">`</span>Grant_priv<span class="sb">`</span> enum<span class="o">(</span><span class="s1">&#39;N&#39;</span>,<span class="s1">&#39;Y&#39;</span><span class="o">)</span> CHARACTER SET utf8 NOT NULL DEFAULT <span class="s1">&#39;N&#39;</span>,
+  <span class="sb">`</span>References_priv<span class="sb">`</span> enum<span class="o">(</span><span class="s1">&#39;N&#39;</span>,<span class="s1">&#39;Y&#39;</span><span class="o">)</span> CHARACTER SET utf8 NOT NULL DEFAULT <span class="s1">&#39;N&#39;</span>,
+  <span class="sb">`</span>Index_priv<span class="sb">`</span> enum<span class="o">(</span><span class="s1">&#39;N&#39;</span>,<span class="s1">&#39;Y&#39;</span><span class="o">)</span> CHARACTER SET utf8 NOT NULL DEFAULT <span class="s1">&#39;N&#39;</span>,
+  <span class="sb">`</span>Alter_priv<span class="sb">`</span> enum<span class="o">(</span><span class="s1">&#39;N&#39;</span>,<span class="s1">&#39;Y&#39;</span><span class="o">)</span> CHARACTER SET utf8 NOT NULL DEFAULT <span class="s1">&#39;N&#39;</span>,
+  <span class="sb">`</span>Create_tmp_table_priv<span class="sb">`</span> enum<span class="o">(</span><span class="s1">&#39;N&#39;</span>,<span class="s1">&#39;Y&#39;</span><span class="o">)</span> CHARACTER SET utf8 NOT NULL DEFAULT <span class="s1">&#39;N&#39;</span>,
+  <span class="sb">`</span>Lock_tables_priv<span class="sb">`</span> enum<span class="o">(</span><span class="s1">&#39;N&#39;</span>,<span class="s1">&#39;Y&#39;</span><span class="o">)</span> CHARACTER SET utf8 NOT NULL DEFAULT <span class="s1">&#39;N&#39;</span>,
+  <span class="sb">`</span>Create_view_priv<span class="sb">`</span> enum<span class="o">(</span><span class="s1">&#39;N&#39;</span>,<span class="s1">&#39;Y&#39;</span><span class="o">)</span> CHARACTER SET utf8 NOT NULL DEFAULT <span class="s1">&#39;N&#39;</span>,
+  <span class="sb">`</span>Show_view_priv<span class="sb">`</span> enum<span class="o">(</span><span class="s1">&#39;N&#39;</span>,<span class="s1">&#39;Y&#39;</span><span class="o">)</span> CHARACTER SET utf8 NOT NULL DEFAULT <span class="s1">&#39;N&#39;</span>,
+  <span class="sb">`</span>Create_routine_priv<span class="sb">`</span> enum<span class="o">(</span><span class="s1">&#39;N&#39;</span>,<span class="s1">&#39;Y&#39;</span><span class="o">)</span> CHARACTER SET utf8 NOT NULL DEFAULT <span class="s1">&#39;N&#39;</span>,
+  <span class="sb">`</span>Alter_routine_priv<span class="sb">`</span> enum<span class="o">(</span><span class="s1">&#39;N&#39;</span>,<span class="s1">&#39;Y&#39;</span><span class="o">)</span> CHARACTER SET utf8 NOT NULL DEFAULT <span class="s1">&#39;N&#39;</span>,
+  <span class="sb">`</span>Execute_priv<span class="sb">`</span> enum<span class="o">(</span><span class="s1">&#39;N&#39;</span>,<span class="s1">&#39;Y&#39;</span><span class="o">)</span> CHARACTER SET utf8 NOT NULL DEFAULT <span class="s1">&#39;N&#39;</span>,
+  <span class="sb">`</span>Trigger_priv<span class="sb">`</span> enum<span class="o">(</span><span class="s1">&#39;N&#39;</span>,<span class="s1">&#39;Y&#39;</span><span class="o">)</span> CHARACTER SET utf8 NOT NULL DEFAULT <span class="s1">&#39;N&#39;</span>,
+  PRIMARY KEY <span class="o">(</span><span class="sb">`</span>Host<span class="sb">`</span>,<span class="sb">`</span>Db<span class="sb">`</span><span class="o">)</span>
+<span class="o">)</span> <span class="nv">ENGINE</span><span class="o">=</span>MyISAM DEFAULT <span class="nv">CHARSET</span><span class="o">=</span>utf8 <span class="nv">COLLATE</span><span class="o">=</span>utf8_bin <span class="nv">COMMENT</span><span class="o">=</span><span class="s1">&#39;Host privileges;  Merged with database privileges&#39;</span><span class="p">;</span>
+</pre></div>
+
+
+<h3>Create replication user on RDS master</h3>
+<p>Normally in production, you would limit the replication user to be from the read-replica (slave) machine. For example, <code>'$REPLICATION_USER'@'my-read-replica.gcp.googlehost.com'</code>.  Since the read-replica hasn't been created and the host address is unknown at this point, temporarily allow the replication user from anywhere.  Alternatively you could <a href="https://cloud.google.com/compute/docs/ip-addresses/reserve-static-external-ip-address">reserve a static external IP address</a> within the Google Cloud console and then attach it to the read-replica instance after creation.</p>
+<div class="highlight"><pre><span></span><span class="nv">REPLICATION_USER</span><span class="o">=</span><span class="s1">&#39;repl&#39;</span>
+<span class="nv">REPLICATION_USER_PASSWORD</span><span class="o">=</span><span class="s1">&#39;slavepass&#39;</span>
+mysql -h <span class="nv">$RDS_MASTER_HOSTNAME</span> -u <span class="nv">$MASTER_USERNAME</span> -p<span class="nv">$MASTER_USER_PASSWORD</span> -e <span class="s2">&quot;CREATE USER &#39;</span><span class="nv">$REPLICATION_USER</span><span class="s2">&#39; IDENTIFIED BY &#39;</span><span class="nv">$REPLICATION_USER_PASSWORD</span><span class="s2">&#39;; GRANT REPLICATION SLAVE ON *.* TO &#39;</span><span class="nv">$REPLICATION_USER</span><span class="s2">&#39;@&#39;%&#39;;&quot;</span>
+</pre></div>
+
+
+<h2>Configure Google Cloud SQL External Master</h2>
+<p>This follows <a href="https://cloud.google.com/sql/docs/mysql/replication/configure-external-master">Google's guidelines</a> on how to configure an external master.</p>
+<h3>Google Cloud credentials</h3>
+<h5>Create Google Cloud service account</h5>
+<div class="highlight"><pre><span></span><span class="nv">PROJECT_NAME</span><span class="o">=</span>gcp-project
+<span class="nv">PROJECT_ID</span><span class="o">=</span>gcp-project-id
+<span class="nv">SERVICE_ACCOUNT_NAME</span><span class="o">=</span>default
+gcloud iam service-accounts create <span class="nv">$SERVICE_ACCOUNT_NAME</span>
+gcloud projects add-iam-policy-binding <span class="nv">$PROJECT_ID</span> --member <span class="s2">&quot;serviceAccount:</span><span class="nv">$SERVICE_ACCOUNT_NAME</span><span class="s2">@</span><span class="nv">$PROJECT_ID</span><span class="s2">.iam.gserviceaccount.com&quot;</span>  --role <span class="s2">&quot;roles/owner&quot;</span>
+gcloud iam service-accounts keys create ~/.google-cloud-credentials.json --iam-account <span class="nv">$SERVICE_ACCOUNT_NAME</span>@<span class="nv">$PROJECT_ID</span>.iam.gserviceaccount.com
+</pre></div>
+
+
+<h5>Set environment variable</h5>
+<div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">GOOGLE_APPLICATION_CREDENTIALS</span><span class="o">=</span>~/.google-cloud-credentials.json
+</pre></div>
+
+
+<h5>(Optional) Add to bash profile</h5>
+<div class="highlight"><pre><span></span><span class="nb">echo</span> -e <span class="s2">&quot;\n# Google Cloud\nexport GOOGLE_APPLICATION_CREDENTIALS=~/.google-cloud-credentials.json\n&quot;</span> &gt;&gt; ~/.bash_profile
+</pre></div>
+
+
+<h3>Create Cloud Storage bucket</h3>
+<p>This bucket will be used to store the <code>mysqldump</code> backup file.</p>
+<div class="highlight"><pre><span></span><span class="nv">STORAGE_CLASS</span><span class="o">=</span>regional
+<span class="nv">BUCKET_LOCATION</span><span class="o">=</span>us-east1
+<span class="nv">BUCKET_NAME</span><span class="o">=</span>my-gcp-bucket
+gsutil mb -p <span class="nv">$PROJECT_NAME</span> <span class="se">\</span>
+-c <span class="nv">$STORAGE_CLASS</span> <span class="se">\</span>
+-l <span class="nv">$BUCKET_LOCATION</span> gs://<span class="nv">$BUCKET_NAME</span>/
+</pre></div>
+
+
+<h3>Upload mysqldump file</h3>
+<div class="highlight"><pre><span></span><span class="nv">BUCKET_PATH</span><span class="o">=</span>cloudsql/mysqldump/<span class="nv">$DB_INSTANCE_IDENTIFIER</span>
+gsutil cp <span class="nv">$BACKUP_FILE</span> gs://<span class="nv">$BUCKET_NAME</span>/<span class="nv">$BUCKET_PATH</span>/
+</pre></div>
+
+
+<h3>Create internal master instance</h3>
+<p>The internal master instance (Cloud SQL virtual IP address) and the external master instance (AWS RDS IP address) together make up the master instance for the Cloud SQL replica.  See <a href="https://cloud.google.com/sql/docs/mysql/replication/tips#external-master">external master configuration</a> for more details.</p>
+<div class="highlight"><pre><span></span><span class="nv">INTERNAL_MASTER_INSTANCE_NAME</span><span class="o">=</span><span class="nv">$DB_INSTANCE_IDENTIFIER</span>
+<span class="nv">RDS_MASTER_IP</span><span class="o">=</span><span class="k">$(</span>resolveip -s <span class="nv">$RDS_MASTER_HOSTNAME</span><span class="k">)</span>
+<span class="nv">REGION_NAME</span><span class="o">=</span>us-east1
+<span class="nv">EXTERNAL_MASTER_DATABASE_VERSION</span><span class="o">=</span>MYSQL_5_6
+<span class="nv">PORT</span><span class="o">=</span><span class="m">3306</span>
+<span class="nv">ACCESS_TOKEN</span><span class="o">=</span><span class="s2">&quot;</span><span class="k">$(</span>gcloud auth application-default print-access-token<span class="k">)</span><span class="s2">&quot;</span>
+
+<span class="c1"># Internal master</span>
+curl --header <span class="s2">&quot;Authorization: Bearer </span><span class="si">${</span><span class="nv">ACCESS_TOKEN</span><span class="si">}</span><span class="s2">&quot;</span> --header <span class="s1">&#39;Content-Type: application/json&#39;</span> <span class="se">\</span>
+--data <span class="s1">&#39;{&quot;name&quot;: &quot;&#39;</span><span class="s2">&quot;</span><span class="nv">$INTERNAL_MASTER_INSTANCE_NAME</span><span class="s2">&quot;</span><span class="s1">&#39;&quot;, &quot;region&quot;: &quot;&#39;</span><span class="s2">&quot;</span><span class="nv">$REGION_NAME</span><span class="s2">&quot;</span><span class="s1">&#39;&quot;, &quot;databaseVersion&quot;: &quot;&#39;</span><span class="s2">&quot;</span><span class="nv">$EXTERNAL_MASTER_DATABASE_VERSION</span><span class="s2">&quot;</span><span class="s1">&#39;&quot;, &quot;onPremisesConfiguration&quot;: {&quot;hostPort&quot;: &quot;&#39;</span><span class="s2">&quot;</span><span class="nv">$RDS_MASTER_IP</span><span class="s2">:</span><span class="nv">$PORT</span><span class="s2">&quot;</span><span class="s1">&#39;&quot;}}&#39;</span> <span class="se">\</span>
+-X POST https://www.googleapis.com/sql/v1beta4/projects/<span class="nv">$PROJECT_ID</span>/instances
+</pre></div>
+
+
+<h3>Create replica instance</h3>
+<p>Cloud SQL First generation instance</p>
+<div class="highlight"><pre><span></span><span class="nv">REPLICA_NAME</span><span class="o">=</span><span class="nv">$REPLICA_INSTANCE_IDENTIFIER</span>
+<span class="nv">TIER</span><span class="o">=</span>D4
+
+<span class="c1"># Replica</span>
+curl --header <span class="s2">&quot;Authorization: Bearer </span><span class="si">${</span><span class="nv">ACCESS_TOKEN</span><span class="si">}</span><span class="s2">&quot;</span> --header <span class="s1">&#39;Content-Type: application/json&#39;</span> <span class="se">\</span>
+--data <span class="s1">&#39;{&quot;replicaConfiguration&quot;: {&quot;mysqlReplicaConfiguration&quot;: {&quot;username&quot;: &quot;&#39;</span><span class="s2">&quot;</span><span class="nv">$REPLICATION_USER</span><span class="s2">&quot;</span><span class="s1">&#39;&quot;, &quot;password&quot;: &quot;&#39;</span><span class="s2">&quot;</span><span class="nv">$REPLICATION_USER_PASSWORD</span><span class="s2">&quot;</span><span class="s1">&#39;&quot;, &quot;dumpFilePath&quot;: &quot;&#39;</span><span class="s2">&quot;gs://</span><span class="nv">$BUCKET_NAME</span><span class="s2">/</span><span class="nv">$BUCKET_PATH</span><span class="s2">/</span><span class="nv">$BACKUP_FILE</span><span class="s2">&quot;</span><span class="s1">&#39;&quot;}}, &quot;settings&quot;: {&quot;tier&quot;: &quot;&#39;</span><span class="s2">&quot;</span><span class="nv">$TIER</span><span class="s2">&quot;</span><span class="s1">&#39;&quot;,&quot;activationPolicy&quot;: &quot;ALWAYS&quot;}, &quot;databaseVersion&quot;: &quot;&#39;</span><span class="s2">&quot;</span><span class="nv">$EXTERNAL_MASTER_DATABASE_VERSION</span><span class="s2">&quot;</span><span class="s1">&#39;&quot;, &quot;masterInstanceName&quot;: &quot;&#39;</span><span class="s2">&quot;</span><span class="nv">$INTERNAL_MASTER_INSTANCE_NAME</span><span class="s2">&quot;</span><span class="s1">&#39;&quot;, &quot;name&quot;: &quot;&#39;</span><span class="s2">&quot;</span><span class="nv">$REPLICA_NAME</span><span class="s2">&quot;</span><span class="s1">&#39;&quot;, &quot;region&quot;: &quot;&#39;</span><span class="s2">&quot;</span><span class="nv">$REGION_NAME</span><span class="s2">&quot;</span><span class="s1">&#39;&quot;}&#39;</span> <span class="se">\</span>
+-X POST https://www.googleapis.com/sql/v1beta4/projects/<span class="nv">$PROJECT_ID</span>/instances
+</pre></div>
+
+
+<h3>Wait until instance is available</h3>
+<div class="highlight"><pre><span></span><span class="c1"># Wait for CREATE operation</span>
+<span class="nv">OPERATION_ID</span><span class="o">=</span><span class="k">$(</span>gcloud sql operations list --instance<span class="o">=</span><span class="nv">$REPLICA_NAME</span> --filter<span class="o">=</span>operationType:<span class="s2">&quot;CREATE&quot;</span> --format<span class="o">=</span><span class="s2">&quot;value(name)&quot;</span><span class="k">)</span>
+gcloud sql operations <span class="nb">wait</span> <span class="nv">$OPERATION_ID</span>
+
+<span class="c1"># Wait for all operations</span>
+gcloud sql operations <span class="nb">wait</span> <span class="k">$(</span>gcloud sql operations list --instance<span class="o">=</span><span class="nv">$REPLICA_NAME</span> --uri<span class="k">)</span>
+</pre></div>
+
+
+<h3>Patch replica</h3>
+<p>Assign IPv4 address, change to synchronous replication, and add CIDR ingress network (IP address of RDS master), then restart</p>
+<div class="highlight"><pre><span></span>gcloud sql instances patch <span class="nv">$REPLICA_NAME</span> <span class="se">\</span>
+--assign-ip <span class="se">\</span>
+--replication<span class="o">=</span>SYNCHRONOUS <span class="se">\</span>
+--authorized-networks<span class="o">=</span><span class="nv">$RDS_MASTER_IP</span>/32
+gcloud sql instances restart <span class="nv">$REPLICA_NAME</span>
+</pre></div>
+
+
+<p>You should now limit the replication user on the RDS master to be from the read-replica (slave) machine. </p>
+<div class="highlight"><pre><span></span><span class="nv">GCP_REPLICA_IP</span><span class="o">=</span><span class="k">$(</span>gcloud sql instances describe <span class="nv">$REPLICA_NAME</span> --format<span class="o">=</span>json <span class="p">|</span> jq -r <span class="s1">&#39;.ipAddresses[0].ipAddress&#39;</span><span class="k">)</span>
+mysql -h <span class="nv">$RDS_MASTER_HOSTNAME</span> -u <span class="nv">$MASTER_USERNAME</span> -p<span class="nv">$MASTER_USER_PASSWORD</span> -e <span class="s2">&quot;RENAME USER &#39;</span><span class="nv">$REPLICATION_USER</span><span class="s2">&#39;@&#39;%&#39; TO &#39;</span><span class="nv">$REPLICATION_USER</span><span class="s2">&#39;@&#39;</span><span class="nv">$GCP_REPLICA_IP</span><span class="s2">&#39;;&quot;</span>
+</pre></div>
+
+
+<h3>Check replication status</h3>
+<div class="highlight"><pre><span></span>gcloud sql instances describe <span class="nv">$REPLICA_NAME</span> 
+gcloud sql instances describe <span class="nv">$INTERNAL_MASTER_INSTANCE_NAME</span>
+</pre></div>
+
+
+<h3>Accessing the read-replica</h3>
+<p>Cloud SQL prevents creating users on read-replicas.  Creating a user on the external master propagates down to the replica, allowing access to the read-replica.</p>
+<div class="highlight"><pre><span></span><span class="nv">REPLICA_USER</span><span class="o">=</span>myreplica
+<span class="nv">REPLICA_PASSWORD</span><span class="o">=</span>myreplicapass
+mysql -h <span class="nv">$RDS_MASTER_HOSTNAME</span> -u <span class="nv">$MASTER_USERNAME</span> -p<span class="nv">$MASTER_USER_PASSWORD</span> -e <span class="s2">&quot;CREATE USER &#39;</span><span class="nv">$REPLICA_USER</span><span class="s2">&#39; IDENTIFIED BY &#39;</span><span class="nv">$REPLICA_PASSWORD</span><span class="s2">&#39;; GRANT ALL PRIVILEGES ON </span><span class="nv">$DB_NAME</span><span class="s2">.* TO &#39;</span><span class="nv">$REPLICA_USER</span><span class="s2">&#39;@&#39;%&#39;;&quot;</span>
+</pre></div>
+
+
+<h3>Configure SSL</h3>
+<p>Configure SSL for the connections from Cloud SQL to external masters.  See:  <a href="https://cloud.google.com/sql/docs/mysql/configure-ssl-instance">https://cloud.google.com/sql/docs/mysql/configure-ssl-instance</a></p>
+<h2>Next steps for full migration to GCP</h2>
+<p>The following describe the steps to take to fully migrate off AWS and onto GCP</p>
+<h4>1. Stop AWS RDS read/write services</h4>
+<h4>2. Promote the Cloud SQL replica</h4>
+<p>Promoting a replica to a stand-alone Cloud SQL instance is an irreversible action. Once promoted, an instance cannot be converted back to a read-replica.</p>
+<h4>3. (Optional) Migrate and Upgrade Google Cloud SQL</h4>
+<p>Migrating to a Google Cloud SQL Second Generation instance offers higher performance and storage capacity at a lower cost.  Additionally upgrade the version of MySQL to 5.6 or 5.7 all in the same migration step.</p>
+<h4>4. Point read/write applications to the GCP Cloud SQL instance and start services</h4>
+            </div>
+            <!-- /.entry-content -->
+        </article>
+    </section>
+
+        </div>
+        <div class="col-sm-3" id="sidebar">
+            <aside>
+<!-- Sidebar -->
+<section class="well well-sm">
+  <ul class="list-group list-group-flush">
+
+<!-- Sidebar/Social -->
+<li class="list-group-item">
+  <h4><i class="fa fa-home fa-lg"></i><span class="icon-label">Social</span></h4>
+  <ul class="list-group" id="social">
+    <li class="list-group-item"><a href="https://www.linkedin.com/in/justinnaldzin"><i class="fa fa-linkedin-square fa-lg"></i> LinkedIn</a></li>
+    <li class="list-group-item"><a href="https://www.github.com/justinnaldzin"><i class="fa fa-github-square fa-lg"></i> GitHub</a></li>
+    <li class="list-group-item"><a href="https://www.youtube.com/justinnaldzin"><i class="fa fa-youtube-square fa-lg"></i> YouTube</a></li>
+    <li class="list-group-item"><a href="https://www.facebook.com/justinnaldzin"><i class="fa fa-facebook-square fa-lg"></i> Facebook</a></li>
+    <li class="list-group-item"><a href="https://www.twitter.com/justinnaldzin"><i class="fa fa-twitter-square fa-lg"></i> Twitter</a></li>
+  </ul>
+</li>
+<!-- End Sidebar/Social -->
+
+<!-- Sidebar/Tag Cloud -->
+<li class="list-group-item">
+  <a href="/"><h4><i class="fa fa-tags fa-lg"></i><span class="icon-label">Tags</span></h4></a>
+  <ul class="list-group list-inline tagcloud" id="tags">
+    <li class="list-group-item tag-3">
+      <a href="/tag/about.html">about</a>
+    </li>
+    <li class="list-group-item tag-4">
+      <a href="/tag/apache.html">apache</a>
+    </li>
+    <li class="list-group-item tag-3">
+      <a href="/tag/apache-spark.html">apache spark</a>
+    </li>
+    <li class="list-group-item tag-4">
+      <a href="/tag/aws.html">aws</a>
+    </li>
+    <li class="list-group-item tag-4">
+      <a href="/tag/benchmarking.html">benchmarking</a>
+    </li>
+    <li class="list-group-item tag-4">
+      <a href="/tag/big-data.html">big data</a>
+    </li>
+    <li class="list-group-item tag-3">
+      <a href="/tag/bokeh.html">bokeh</a>
+    </li>
+    <li class="list-group-item tag-3">
+      <a href="/tag/change-data-capture.html">change data capture</a>
+    </li>
+    <li class="list-group-item tag-4">
+      <a href="/tag/cloud-sql.html">cloud sql</a>
+    </li>
+    <li class="list-group-item tag-4">
+      <a href="/tag/container-registry.html">container registry</a>
+    </li>
+    <li class="list-group-item tag-3">
+      <a href="/tag/datalab.html">datalab</a>
+    </li>
+    <li class="list-group-item tag-2">
+      <a href="/tag/dataproc.html">dataproc</a>
+    </li>
+    <li class="list-group-item tag-3">
+      <a href="/tag/debezium.html">debezium</a>
+    </li>
+    <li class="list-group-item tag-4">
+      <a href="/tag/docker.html">docker</a>
+    </li>
+    <li class="list-group-item tag-4">
+      <a href="/tag/gcloud.html">gcloud</a>
+    </li>
+    <li class="list-group-item tag-4">
+      <a href="/tag/github.html">github</a>
+    </li>
+    <li class="list-group-item tag-1">
+      <a href="/tag/google-cloud.html">google cloud</a>
+    </li>
+    <li class="list-group-item tag-4">
+      <a href="/tag/google-cloud-platform.html">google cloud platform</a>
+    </li>
+    <li class="list-group-item tag-3">
+      <a href="/tag/hadoop.html">hadoop</a>
+    </li>
+    <li class="list-group-item tag-4">
+      <a href="/tag/hana.html">hana</a>
+    </li>
+    <li class="list-group-item tag-3">
+      <a href="/tag/hdfs.html">hdfs</a>
+    </li>
+    <li class="list-group-item tag-4">
+      <a href="/tag/hive.html">hive</a>
+    </li>
+    <li class="list-group-item tag-4">
+      <a href="/tag/information-technology.html">information technology</a>
+    </li>
+    <li class="list-group-item tag-4">
+      <a href="/tag/iot.html">iot</a>
+    </li>
+    <li class="list-group-item tag-4">
+      <a href="/tag/java.html">java</a>
+    </li>
+    <li class="list-group-item tag-1">
+      <a href="/tag/jupyter.html">jupyter</a>
+    </li>
+    <li class="list-group-item tag-3">
+      <a href="/tag/kafka.html">kafka</a>
+    </li>
+    <li class="list-group-item tag-4">
+      <a href="/tag/kubectl.html">kubectl</a>
+    </li>
+    <li class="list-group-item tag-2">
+      <a href="/tag/kubernetes.html">kubernetes</a>
+    </li>
+    <li class="list-group-item tag-4">
+      <a href="/tag/magic-mirror.html">magic-mirror</a>
+    </li>
+    <li class="list-group-item tag-4">
+      <a href="/tag/matplotlib.html">matplotlib</a>
+    </li>
+    <li class="list-group-item tag-2">
+      <a href="/tag/minikube.html">minikube</a>
+    </li>
+    <li class="list-group-item tag-4">
+      <a href="/tag/mysql.html">mysql</a>
+    </li>
+    <li class="list-group-item tag-4">
+      <a href="/tag/oracle.html">oracle</a>
+    </li>
+    <li class="list-group-item tag-4">
+      <a href="/tag/pelican.html">pelican</a>
+    </li>
+    <li class="list-group-item tag-2">
+      <a href="/tag/pyspark.html">pyspark</a>
+    </li>
+    <li class="list-group-item tag-1">
+      <a href="/tag/python.html">python</a>
+    </li>
+    <li class="list-group-item tag-4">
+      <a href="/tag/rds.html">rds</a>
+    </li>
+    <li class="list-group-item tag-4">
+      <a href="/tag/scala.html">scala</a>
+    </li>
+    <li class="list-group-item tag-1">
+      <a href="/tag/spark.html">spark</a>
+    </li>
+    <li class="list-group-item tag-4">
+      <a href="/tag/sql-server.html">sql server</a>
+    </li>
+    <li class="list-group-item tag-3">
+      <a href="/tag/sqoop.html">sqoop</a>
+    </li>
+    <li class="list-group-item tag-4">
+      <a href="/tag/vagrant.html">vagrant</a>
+    </li>
+  </ul>
+</li>
+<!-- End Sidebar/Tag Cloud -->
+
+<!-- Sidebar/Github -->
+<li class="list-group-item">
+  <h4><i class="fa fa-github fa-lg"></i><span class="icon-label">GitHub Repos</span></h4>
+  <div id="gh_repos">
+    <p class="list-group-item">Status updating...</p>
+  </div>
+</li>
+<!-- End Sidebar/Github -->
+  </ul>
+</section>
+<!-- End Sidebar -->            </aside>
+        </div>
+    </div>
+</div>
+<!-- End Content Container -->
+
+<footer>
+   <div class="container">
+      <hr>
+      <div class="row">
+         <div class="col-xs-10">&copy; 2018 Justin Naldzin
+            &middot; Powered by <a href="https://github.com/getpelican/pelican-themes/tree/master/pelican-bootstrap3" target="_blank">pelican-bootstrap3</a>,
+            <a href="http://docs.getpelican.com/" target="_blank">Pelican</a>,
+            <a href="http://getbootstrap.com" target="_blank">Bootstrap</a>         </div>
+         <div class="col-xs-2"><p class="pull-right"><i class="fa fa-arrow-up"></i> <a href="#">Back to top</a></p></div>
+      </div>
+   </div>
+</footer>
+<script src="/theme/js/jquery.min.js"></script>
+
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="/theme/js/bootstrap.min.js"></script>
+
+<!-- Enable responsive features in IE8 with Respond.js (https://github.com/scottjehl/Respond) -->
+<script src="/theme/js/respond.min.js"></script>
+
+
+
+<!-- GitHub JS Code -->
+<script type="text/javascript">
+$(document).ready(function () {
+  if (!window.jXHR) {
+    var jxhr = document.createElement('script');
+    jxhr.type = 'text/javascript';
+    jxhr.src = '/theme/js/jXHR.js';
+    var s = document.getElementsByTagName('script')[0];
+    s.parentNode.insertBefore(jxhr, s);
+  }
+
+  github.showRepos({
+    user: 'justinnaldzin',
+    count: 5,
+    skip_forks: false,
+    target: '#gh_repos'
+  });
+});
+</script>
+<script src="/theme/js/github.js" type="text/javascript"></script>
+<!-- End GitHub JS Code -->
+
+
+</body>
+</html>

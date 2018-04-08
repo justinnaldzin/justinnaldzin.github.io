@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en" prefix="og: http://ogp.me/ns# fb: https://www.facebook.com/2008/fbml">
+<head>
+    <title>rds - Justin Naldzin</title>
+    <!-- Using the latest rendering mode for IE -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+
+
+    <meta name="author" content="Justin Naldzin" />
+    <meta name="keywords" content="rds" />
+
+    <!-- Open Graph tags -->
+        <meta property="og:site_name" content="Justin Naldzin" />
+        <meta property="og:type" content="website"/>
+        <meta property="og:title" content="Justin Naldzin"/>
+        <meta property="og:url" content=""/>
+        <meta property="og:description" content="Justin Naldzin"/>
+
+
+
+    <!-- Bootstrap -->
+        <link rel="stylesheet" href="/theme/css/bootstrap.paper.min.css" type="text/css"/>
+    <link href="/theme/css/font-awesome.min.css" rel="stylesheet">
+
+    <link href="/theme/css/pygments/emacs.css" rel="stylesheet">
+    <link rel="stylesheet" href="/theme/css/style.css" type="text/css"/>
+
+
+
+
+
+</head>
+<body>
+
+<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a href="/" class="navbar-brand">
+Justin Naldzin            </a>
+        </div>
+        <div class="collapse navbar-collapse navbar-ex1-collapse">
+            <ul class="nav navbar-nav">
+                        <li >
+                            <a href="/category/about.html">About</a>
+                        </li>
+                        <li >
+                            <a href="/category/github-repos.html">Github repos</a>
+                        </li>
+                        <li >
+                            <a href="/category/guides.html">Guides</a>
+                        </li>
+                        <li >
+                            <a href="/category/internet-of-things.html">Internet of things</a>
+                        </li>
+                        <li >
+                            <a href="/category/notebooks.html">Notebooks</a>
+                        </li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+</div> <!-- /.navbar -->
+
+<!-- Banner -->
+<!-- End Banner -->
+
+<!-- Content Container -->
+<div class="container">
+    <div class="row">
+        <div class="col-sm-9">
+            <article>
+                <h2><a href="/replication-from-aws-rds-mysql-to-google-cloud-sql-without-downtime.html">Replication from AWS RDS MySQL to Google Cloud SQL (without downtime)</a></h2>
+                <div class="summary"><p>The following guide performs cloud-to-cloud replication from <a href="https://aws.amazon.com/rds/">Amazon Relational Database Service (RDS)</a> to <a href="https://cloud.google.com/sql/docs/">Google Cloud SQL</a>.</p>
+                    <a class="btn btn-default btn-xs" href="/replication-from-aws-rds-mysql-to-google-cloud-sql-without-downtime.html">more ...</a>
+                </div>
+            </article>
+            <hr/>
+
+        </div>
+        <div class="col-sm-3" id="sidebar">
+            <aside>
+<!-- Sidebar -->
+<section class="well well-sm">
+  <ul class="list-group list-group-flush">
+
+<!-- Sidebar/Social -->
+<li class="list-group-item">
+  <h4><i class="fa fa-home fa-lg"></i><span class="icon-label">Social</span></h4>
+  <ul class="list-group" id="social">
+    <li class="list-group-item"><a href="https://www.linkedin.com/in/justinnaldzin"><i class="fa fa-linkedin-square fa-lg"></i> LinkedIn</a></li>
+    <li class="list-group-item"><a href="https://www.github.com/justinnaldzin"><i class="fa fa-github-square fa-lg"></i> GitHub</a></li>
+    <li class="list-group-item"><a href="https://www.youtube.com/justinnaldzin"><i class="fa fa-youtube-square fa-lg"></i> YouTube</a></li>
+    <li class="list-group-item"><a href="https://www.facebook.com/justinnaldzin"><i class="fa fa-facebook-square fa-lg"></i> Facebook</a></li>
+    <li class="list-group-item"><a href="https://www.twitter.com/justinnaldzin"><i class="fa fa-twitter-square fa-lg"></i> Twitter</a></li>
+  </ul>
+</li>
+<!-- End Sidebar/Social -->
+
+<!-- Sidebar/Tag Cloud -->
+<li class="list-group-item">
+  <a href="/"><h4><i class="fa fa-tags fa-lg"></i><span class="icon-label">Tags</span></h4></a>
+  <ul class="list-group list-inline tagcloud" id="tags">
+    <li class="list-group-item tag-3">
+      <a href="/tag/about.html">about</a>
+    </li>
+    <li class="list-group-item tag-4">
+      <a href="/tag/apache.html">apache</a>
+    </li>
+    <li class="list-group-item tag-3">
+      <a href="/tag/apache-spark.html">apache spark</a>
+    </li>
+    <li class="list-group-item tag-4">
+      <a href="/tag/aws.html">aws</a>
+    </li>
+    <li class="list-group-item tag-4">
+      <a href="/tag/benchmarking.html">benchmarking</a>
+    </li>
+    <li class="list-group-item tag-4">
+      <a href="/tag/big-data.html">big data</a>
+    </li>
+    <li class="list-group-item tag-3">
+      <a href="/tag/bokeh.html">bokeh</a>
+    </li>
+    <li class="list-group-item tag-3">
+      <a href="/tag/change-data-capture.html">change data capture</a>
+    </li>
+    <li class="list-group-item tag-4">
+      <a href="/tag/cloud-sql.html">cloud sql</a>
+    </li>
+    <li class="list-group-item tag-4">
+      <a href="/tag/container-registry.html">container registry</a>
+    </li>
+    <li class="list-group-item tag-3">
+      <a href="/tag/datalab.html">datalab</a>
+    </li>
+    <li class="list-group-item tag-2">
+      <a href="/tag/dataproc.html">dataproc</a>
+    </li>
+    <li class="list-group-item tag-3">
+      <a href="/tag/debezium.html">debezium</a>
+    </li>
+    <li class="list-group-item tag-4">
+      <a href="/tag/docker.html">docker</a>
+    </li>
+    <li class="list-group-item tag-4">
+      <a href="/tag/gcloud.html">gcloud</a>
+    </li>
+    <li class="list-group-item tag-4">
+      <a href="/tag/github.html">github</a>
+    </li>
+    <li class="list-group-item tag-1">
+      <a href="/tag/google-cloud.html">google cloud</a>
+    </li>
+    <li class="list-group-item tag-4">
+      <a href="/tag/google-cloud-platform.html">google cloud platform</a>
+    </li>
+    <li class="list-group-item tag-3">
+      <a href="/tag/hadoop.html">hadoop</a>
+    </li>
+    <li class="list-group-item tag-4">
+      <a href="/tag/hana.html">hana</a>
+    </li>
+    <li class="list-group-item tag-3">
+      <a href="/tag/hdfs.html">hdfs</a>
+    </li>
+    <li class="list-group-item tag-4">
+      <a href="/tag/hive.html">hive</a>
+    </li>
+    <li class="list-group-item tag-4">
+      <a href="/tag/information-technology.html">information technology</a>
+    </li>
+    <li class="list-group-item tag-4">
+      <a href="/tag/iot.html">iot</a>
+    </li>
+    <li class="list-group-item tag-4">
+      <a href="/tag/java.html">java</a>
+    </li>
+    <li class="list-group-item tag-1">
+      <a href="/tag/jupyter.html">jupyter</a>
+    </li>
+    <li class="list-group-item tag-3">
+      <a href="/tag/kafka.html">kafka</a>
+    </li>
+    <li class="list-group-item tag-4">
+      <a href="/tag/kubectl.html">kubectl</a>
+    </li>
+    <li class="list-group-item tag-2">
+      <a href="/tag/kubernetes.html">kubernetes</a>
+    </li>
+    <li class="list-group-item tag-4">
+      <a href="/tag/magic-mirror.html">magic-mirror</a>
+    </li>
+    <li class="list-group-item tag-4">
+      <a href="/tag/matplotlib.html">matplotlib</a>
+    </li>
+    <li class="list-group-item tag-2">
+      <a href="/tag/minikube.html">minikube</a>
+    </li>
+    <li class="list-group-item tag-4">
+      <a href="/tag/mysql.html">mysql</a>
+    </li>
+    <li class="list-group-item tag-4">
+      <a href="/tag/oracle.html">oracle</a>
+    </li>
+    <li class="list-group-item tag-4">
+      <a href="/tag/pelican.html">pelican</a>
+    </li>
+    <li class="list-group-item tag-2">
+      <a href="/tag/pyspark.html">pyspark</a>
+    </li>
+    <li class="list-group-item tag-1">
+      <a href="/tag/python.html">python</a>
+    </li>
+    <li class="list-group-item tag-4">
+      <a href="/tag/rds.html">rds</a>
+    </li>
+    <li class="list-group-item tag-4">
+      <a href="/tag/scala.html">scala</a>
+    </li>
+    <li class="list-group-item tag-1">
+      <a href="/tag/spark.html">spark</a>
+    </li>
+    <li class="list-group-item tag-4">
+      <a href="/tag/sql-server.html">sql server</a>
+    </li>
+    <li class="list-group-item tag-3">
+      <a href="/tag/sqoop.html">sqoop</a>
+    </li>
+    <li class="list-group-item tag-4">
+      <a href="/tag/vagrant.html">vagrant</a>
+    </li>
+  </ul>
+</li>
+<!-- End Sidebar/Tag Cloud -->
+
+<!-- Sidebar/Github -->
+<li class="list-group-item">
+  <h4><i class="fa fa-github fa-lg"></i><span class="icon-label">GitHub Repos</span></h4>
+  <div id="gh_repos">
+    <p class="list-group-item">Status updating...</p>
+  </div>
+</li>
+<!-- End Sidebar/Github -->
+  </ul>
+</section>
+<!-- End Sidebar -->            </aside>
+        </div>
+    </div>
+</div>
+<!-- End Content Container -->
+
+<footer>
+   <div class="container">
+      <hr>
+      <div class="row">
+         <div class="col-xs-10">&copy; 2018 Justin Naldzin
+            &middot; Powered by <a href="https://github.com/getpelican/pelican-themes/tree/master/pelican-bootstrap3" target="_blank">pelican-bootstrap3</a>,
+            <a href="http://docs.getpelican.com/" target="_blank">Pelican</a>,
+            <a href="http://getbootstrap.com" target="_blank">Bootstrap</a>         </div>
+         <div class="col-xs-2"><p class="pull-right"><i class="fa fa-arrow-up"></i> <a href="#">Back to top</a></p></div>
+      </div>
+   </div>
+</footer>
+<script src="/theme/js/jquery.min.js"></script>
+
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="/theme/js/bootstrap.min.js"></script>
+
+<!-- Enable responsive features in IE8 with Respond.js (https://github.com/scottjehl/Respond) -->
+<script src="/theme/js/respond.min.js"></script>
+
+
+
+<!-- GitHub JS Code -->
+<script type="text/javascript">
+$(document).ready(function () {
+  if (!window.jXHR) {
+    var jxhr = document.createElement('script');
+    jxhr.type = 'text/javascript';
+    jxhr.src = '/theme/js/jXHR.js';
+    var s = document.getElementsByTagName('script')[0];
+    s.parentNode.insertBefore(jxhr, s);
+  }
+
+  github.showRepos({
+    user: 'justinnaldzin',
+    count: 5,
+    skip_forks: false,
+    target: '#gh_repos'
+  });
+});
+</script>
+<script src="/theme/js/github.js" type="text/javascript"></script>
+<!-- End GitHub JS Code -->
+
+
+</body>
+</html>
